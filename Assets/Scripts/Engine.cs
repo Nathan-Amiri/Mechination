@@ -29,8 +29,11 @@ public class Engine : Node
     //called by GameManager if this engine is in queue
     public void ActivateEngine()
     {
+        //the position in front of this one
+        Vector2 targetPosition = (Vector2)transform.position + engineDirection;
+
         //check for node in front of engine
-        if (!GridIndex.gridIndex.ContainsKey((Vector2)transform.position + engineDirection))
+        if (!gridIndex.TryGetValue(targetPosition, out Node targetNode))
             return;
 
         //reset moving variables
@@ -38,7 +41,7 @@ public class Engine : Node
         movingFailed = false;
 
         //get all moving nodes
-        GridIndex.gridIndex[(Vector2)transform.position + engineDirection].GetMovingNode(this, engineDirection);
+        targetNode.GetMovingNode(this, engineDirection);
 
         //check if moving failed
         if (movingFailed) return;
@@ -53,21 +56,31 @@ public class Engine : Node
             node.transform.position += (Vector3)engineDirection;
 
             //remove old keyValuePairs
-            GridIndex.gridIndex.Remove(oldPosition);
+            gridIndex.Remove(oldPosition);
 
             //cache keyValuePair to add later
             keyValuePairsToAddToIndex.Add(node.transform.position, node);
         }
         //add cached keyValuePairs to gridIndex
         foreach (KeyValuePair<Vector2, Node> keyValuePair in keyValuePairsToAddToIndex)
-            GridIndex.gridIndex.Add(keyValuePair.Key, keyValuePair.Value);
+            gridIndex.Add(keyValuePair.Key, keyValuePair.Value);
     }
 
     //called by GameManager on all Engines at the end of each cycle
     public void RefillQueue()
     {
+        //Debug.Log((Vector2)transform.position + engineDirection);
+        //Debug.Log(gridIndex.ContainsKey((Vector2)transform.position + engineDirection));
+
+        Vector2 targetPosition = (Vector2)transform.position + engineDirection;
+
+        Debug.Log("position being checked is " + targetPosition);
+        Debug.Log("dictionary has key -5.50, -1.50? " + gridIndex.ContainsKey(new Vector2(-5.50f, -1.50f)));
+        Debug.Log("position being checked is -5.50, -1.50? " + (targetPosition == new Vector2(-5.50f, -1.50f)));
+        Debug.Log("dictionary has checkPosition? " + gridIndex.ContainsKey(targetPosition));
+
         //if there's a node in front of engine, add engine to queue and attempt to activate
-        if (GridIndex.gridIndex.ContainsKey((Vector2)transform.position + engineDirection))
+        if (gridIndex.ContainsKey(targetPosition))
             GameManager.engineQueue.Add(this);
     }
 }

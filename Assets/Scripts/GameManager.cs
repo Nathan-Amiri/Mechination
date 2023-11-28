@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private SpriteRenderer grid;
     [SerializeField] private float tickSpeed;
 
+    private readonly float startDelay = .25f;
 
     public delegate void FillGridIndexAction();
     public static FillGridIndexAction FillGridIndex;
@@ -21,8 +22,6 @@ public class GameManager : MonoBehaviour
     public static Vector2 GridSize {  get; private set; }
 
     public static List<Engine> engineQueue = new();
-
-    private bool gameOver = false;
 
     private void Start()
     {
@@ -40,7 +39,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator StartCycle()
     {
-        while (!gameOver)
+        yield return new WaitForSeconds(startDelay);
+
+        while (true)
         {
             Cycle();
             yield return new WaitForSeconds(tickSpeed);
@@ -52,15 +53,6 @@ public class GameManager : MonoBehaviour
     {
         //refill queue
         RefillQueue?.Invoke();
-
-        //check for gameEnd
-        if (engineQueue.Count == 0)
-        {
-            gameOver = true;
-            Debug.Log("Game Over!");
-
-            return;
-        }
 
         //activate all engines in queue
         foreach (Engine engine in engineQueue)
