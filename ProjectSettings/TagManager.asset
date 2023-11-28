@@ -1,0 +1,58 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags: []
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Grid
+    uniqueID: 2699364077
+    locked: 0
+  - name: Node
+    uniqueID: 2903330573
+    locked: 0
+  - name: EngineIcon
+    uniqueID: 2649475099
+    locked: 0
+  - name: Fastener
+    uniqueID: 2904612425
+    locked: 0
+  - name: UI
+    uniqueID: 3501103695
+    locked: 0
