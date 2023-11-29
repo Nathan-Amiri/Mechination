@@ -21,16 +21,18 @@ public class Engine : Node
         GameManager.RefillQueue -= RefillQueue;
     }
 
-    private void Awake()
+    protected new void Awake()
     {
-        engineDirection = transform.up;
+        base.Awake();
+
+        engineDirection = Vector2Int.RoundToInt(transform.up); //replace this later!
     }
 
     //called by GameManager if this engine is in queue
     public void ActivateEngine()
     {
         //the position in front of this one
-        Vector2 targetPosition = (Vector2)transform.position + engineDirection;
+        Vector2Int targetPosition = currentPosition + engineDirection * 2;
 
         //check for node in front of engine
         if (!gridIndex.TryGetValue(targetPosition, out Node targetNode))
@@ -47,40 +49,31 @@ public class Engine : Node
         if (movingFailed) return;
 
         //move all moving nodes. remove all keyValuePairs from gridindex before adding any new ones
-        Dictionary<Vector2, Node> keyValuePairsToAddToIndex = new();
+        Dictionary<Vector2Int, Node> keyValuePairsToAddToIndex = new();
         foreach (Node node in movingNodes)
         {
-            Vector2 oldPosition = node.transform.position;
+            Vector2Int oldPosition = node.currentPosition;
 
-            //engineDirection already set to magnitude of 1
-            node.transform.position += (Vector3)engineDirection;
+            //move node
+            node.currentPosition += engineDirection * 2;
+            node.transform.position = (Vector2)node.currentPosition;
 
             //remove old keyValuePairs
             gridIndex.Remove(oldPosition);
 
             //cache keyValuePair to add later
-            keyValuePairsToAddToIndex.Add(node.transform.position, node);
+            keyValuePairsToAddToIndex.Add(node.currentPosition, node);
         }
         //add cached keyValuePairs to gridIndex
-        foreach (KeyValuePair<Vector2, Node> keyValuePair in keyValuePairsToAddToIndex)
+        foreach (KeyValuePair<Vector2Int, Node> keyValuePair in keyValuePairsToAddToIndex)
             gridIndex.Add(keyValuePair.Key, keyValuePair.Value);
     }
 
     //called by GameManager on all Engines at the end of each cycle
     public void RefillQueue()
     {
-        //Debug.Log((Vector2)transform.position + engineDirection);
-        //Debug.Log(gridIndex.ContainsKey((Vector2)transform.position + engineDirection));
-
-        Vector2 targetPosition = (Vector2)transform.position + engineDirection;
-
-        Debug.Log("position being checked is " + targetPosition);
-        Debug.Log("dictionary has key -5.50, -1.50? " + gridIndex.ContainsKey(new Vector2(-5.50f, -1.50f)));
-        Debug.Log("position being checked is -5.50, -1.50? " + (targetPosition == new Vector2(-5.50f, -1.50f)));
-        Debug.Log("dictionary has checkPosition? " + gridIndex.ContainsKey(targetPosition));
-
         //if there's a node in front of engine, add engine to queue and attempt to activate
-        if (gridIndex.ContainsKey(targetPosition))
+        if (gridIndex.ContainsKey(currentPosition + engineDirection * 2))
             GameManager.engineQueue.Add(this);
     }
 }

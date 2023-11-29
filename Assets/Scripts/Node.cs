@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,18 +8,21 @@ public class Node : MonoBehaviour
     //assigned in prefab
     [SerializeField] private GameObject fastener;
 
-    private readonly List<Vector2> directions = new()
+    private readonly List<Vector2Int> directions = new()
     {
-        Vector2.right, Vector2.left, Vector2.up, Vector2.down
+        Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down
     };
 
     //zero unless this node is an engine, set by Engine.
-    protected Vector2 engineDirection = Vector2.zero;
+    protected Vector2Int engineDirection = Vector2Int.zero;
 
-    public static Dictionary<Vector2, Node> gridIndex = new();
+    public static Dictionary<Vector2Int, Node> gridIndex = new();
 
     //key = a node with fastenings, value = list of nodes the key node is fastened to
     public static Dictionary<Node, List<Node>> fastenedNodes = new();
+
+
+    [NonSerialized] public Vector2Int currentPosition;
 
     protected void OnEnable()
     {
@@ -31,31 +35,43 @@ public class Node : MonoBehaviour
         GameManager.FastenNodes -= FastenNodes;
     }
 
+    protected void Awake()
+    {
+        currentPosition = Vector2Int.RoundToInt(transform.position); //replace this later!
+    }
+
     //called by GameManager at the start of the game
     private void FillGridIndex()
     {
-        gridIndex.Add((Vector2)transform.position, this);
+        gridIndex.Add(currentPosition, this);
     }
 
     //called by GameManager at the start of the game, after gridindex is filled
     private void FastenNodes()
     {
         List<Node> nodesToFasten = new();
-        foreach (Vector2 direction in directions)
+        foreach (Vector2Int direction in directions)
         {
             //check if this node is an engine and it's facing this direction
             if (engineDirection == direction) continue;
 
             //check if there's an adjacent node in this direction
-            if (!gridIndex.TryGetValue((Vector2)transform.position + direction, out Node adjacentNode)) continue;
+            if (!gridIndex.TryGetValue(currentPosition + direction * 2, out Node adjacentNode)) continue;
 
-            //check if the adjacent node is an engine facing this direction
-            if (adjacentNode.engineDirection == (Vector2)transform.position - (Vector2)adjacentNode.transform.position) continue;
+            //check if the adjacent node is an engine facing this node
+            if (adjacentNode.engineDirection * 2 == currentPosition - adjacentNode.currentPosition) continue;
 
-            //create fastener sprite
-            Quaternion fastenerRotation = direction.x == 0 ? Quaternion.Euler(0, 0, 90) : Quaternion.identity;
-                //transform.position makes more sense since the fastener is purely visual, though it should be the same as logicposition here anyway
-            Instantiate(fastener, (Vector2)transform.position + direction * .5f, fastenerRotation, transform);
+            //if adjacent node isn't in static dictionary (meaning it's already created its fastenings), create fastener sprite
+            if (!fastenedNodes.ContainsKey(adjacentNode))
+            {
+                GameObject fastenerObject = Instantiate(fastener, transform);
+                //fastener position = current position + direction * .5 * grid scale, which is 2 so it cancels out
+                fastenerObject.transform.position = (Vector2)currentPosition + (Vector2)direction;
+                //if direction is vertical, rotate fastener
+                //multiply rotation by this node's rotation in case this node (the fastener's parent) is an engine rotated 90 degrees
+                if (direction.x == 0)
+                    fastenerObject.transform.rotation *= Quaternion.Euler(0, 0, 90) * transform.rotation;
+            }
 
             //cache adjacent node
             nodesToFasten.Add(adjacentNode);
@@ -67,11 +83,10 @@ public class Node : MonoBehaviour
     }
 
     //when an engine activates, it calls this method on all nodes it's trying to move
-    //isFirstNode = true when this node is the one in front of the engine (the first node this method is called on)
-    public void GetMovingNode(Engine movingEngine, Vector2 moveDirection)
+    public void GetMovingNode(Engine movingEngine, Vector2Int moveDirection)
     {
         //the position this node would move to
-        Vector2 targetPosition = (Vector2)transform.position + moveDirection;
+        Vector2Int targetPosition = currentPosition + moveDirection * 2;
 
         //1. check if moving already failed
         if (movingEngine.movingFailed) return;
@@ -82,13 +97,15 @@ public class Node : MonoBehaviour
         //if moving along the y axis
         if (moveDirection.x == 0)
         {
-            maxMoveDistanceFromOrigin = GameManager.GridSize.y / 2;
+            //maxMoveDistanceFrom Origin = half of GridSize.y times the grid's scale, which is 2 so it cancels out
+            maxMoveDistanceFromOrigin = GameManager.GridSize.y;
             targetPositionDistanceFromOrigin = targetPosition.y;
         }
         //if moving along the x axis
         else
         {
-            maxMoveDistanceFromOrigin = GameManager.GridSize.x / 2;
+            //maxMoveDistanceFrom Origin = half of GridSize.x times the grid's scale, which is 2 so it cancels out
+            maxMoveDistanceFromOrigin = GameManager.GridSize.x;
             targetPositionDistanceFromOrigin = targetPosition.x;
         }
 

@@ -30,7 +30,7 @@ public class GameManager : MonoBehaviour
         //first, all nodes place their positions in the gridIndex
         FillGridIndex?.Invoke();
 
-        //then, all nodes form attachments
+        //then, all nodes form attachments NOTE: LATER, CHANGE THIS SO THAT FASTENING HAPPENS AS NODES ARE PLACED ON GRID
         FastenNodes?.Invoke();
 
         //finally, begin cycles
