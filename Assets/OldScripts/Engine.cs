@@ -12,13 +12,13 @@ public class Engine : Node
     {
         base.OnEnable();
 
-        GameManager.RefillQueue += RefillQueue;
+        OldGameManager.RefillQueue += RefillQueue;
     }
     protected new void OnDisable()
     {
         base.OnDisable();
 
-        GameManager.RefillQueue -= RefillQueue;
+        OldGameManager.RefillQueue -= RefillQueue;
     }
 
     protected new void Awake()
@@ -74,6 +74,6 @@ public class Engine : Node
     {
         //if there's a node in front of engine, add engine to queue and attempt to activate
         if (gridIndex.ContainsKey(currentPosition + engineDirection * 2))
-            GameManager.engineQueue.Add(this);
+            OldGameManager.engineQueue.Add(this);
     }
 }

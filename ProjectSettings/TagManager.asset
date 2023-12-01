@@ -44,10 +44,10 @@ TagManager:
   - name: Grid
     uniqueID: 2699364077
     locked: 0
-  - name: Node
+  - name: CellBase
     uniqueID: 2903330573
     locked: 0
-  - name: EngineIcon
+  - name: CellIcon
     uniqueID: 2649475099
     locked: 0
   - name: Fastener

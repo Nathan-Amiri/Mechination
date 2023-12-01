@@ -26,13 +26,13 @@ public class Node : MonoBehaviour
 
     protected void OnEnable()
     {
-        GameManager.FillGridIndex += FillGridIndex;
-        GameManager.FastenNodes += FastenNodes;
+        OldGameManager.OldFillGridIndex += FillGridIndex;
+        OldGameManager.FastenNodes += FastenNodes;
     }
     protected void OnDisable()
     {
-        GameManager.FillGridIndex -= FillGridIndex;
-        GameManager.FastenNodes -= FastenNodes;
+        OldGameManager.OldFillGridIndex -= FillGridIndex;
+        OldGameManager.FastenNodes -= FastenNodes;
     }
 
     protected void Awake()
@@ -98,14 +98,14 @@ public class Node : MonoBehaviour
         if (moveDirection.x == 0)
         {
             //maxMoveDistanceFrom Origin = half of GridSize.y times the grid's scale, which is 2 so it cancels out
-            maxMoveDistanceFromOrigin = GameManager.GridSize.y;
+            maxMoveDistanceFromOrigin = OldGameManager.GridSize.y;
             targetPositionDistanceFromOrigin = targetPosition.y;
         }
         //if moving along the x axis
         else
         {
             //maxMoveDistanceFrom Origin = half of GridSize.x times the grid's scale, which is 2 so it cancels out
-            maxMoveDistanceFromOrigin = GameManager.GridSize.x;
+            maxMoveDistanceFromOrigin = OldGameManager.GridSize.x;
             targetPositionDistanceFromOrigin = targetPosition.x;
         }
 
