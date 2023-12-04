@@ -11,8 +11,8 @@ public class GameManager : MonoBehaviour
     public delegate void FastenCellsAction();
     public static FastenCellsAction FastenCells;
 
-    public delegate void PrepareGadgetsAction();
-    public static PrepareGadgetsAction PrepareGadgets;
+    public delegate void ReversePrepareGadgetsAction();
+    public static ReversePrepareGadgetsAction ReversePrepareGadgets;
 
     public static float TickSpeed { get; private set; }
 
@@ -59,18 +59,14 @@ public class GameManager : MonoBehaviour
     //run once per 'gamemanager tick'
     private void Cycle()
     {
-        //must finish each step before proceeding to the next
-
-        //step :. prepare gadgets
-        PrepareGadgets?.Invoke();
+        //step 1: reverse, then prepare gadgets
+        ReversePrepareGadgets?.Invoke();
 
         //step 2: gadgets check fail conditions, then activate
         foreach (Gadget preparedGadget in preparedGadgets)
             preparedGadget.ActivateGadget();
 
-        //step 3: transform gadgets
-
-        //step 4: reset for next cycle
+        //step 3: reset for next cycle (all gadgets must check fails/activate before any reset)
         foreach (Gadget preparedGadget in preparedGadgets)
             preparedGadget.ResetAfterCycle();
 

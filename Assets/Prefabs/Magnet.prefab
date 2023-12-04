@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: c8edec03273ed444ea35e2712667ad91, type: 3}
-  m_Color: {r: 0.30588233, g: 0.74879956, b: 1, a: 1}
+  m_Color: {r: 0.3137255, g: 0.74509805, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -99,6 +99,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fastener: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
+  sr: {fileID: 7165892020793297081}
+  pulserColor:
+    serializedVersion: 2
+    rgba: 4283453695
+  magnetColor:
+    serializedVersion: 2
+    rgba: 4294950480
   isPulser: 0
 --- !u!1 &1789791230881447669
 GameObject:

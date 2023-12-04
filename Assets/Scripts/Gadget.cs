@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class Gadget : Cell
 {
+    //assigned in prefab:
+    [SerializeField] private SpriteRenderer sr;
+    [SerializeField] private Color32 pulserColor;
+    [SerializeField] private Color32 magnetColor;
+
     //readonly:
     [NonSerialized] public readonly List<Cell> movingCells = new();
 
@@ -13,18 +18,20 @@ public class Gadget : Cell
 
     [NonSerialized] public Vector2Int gadgetDirection;
 
+    [NonSerialized] public List<Cell> adjacentNodes = new();
+
     protected new void OnEnable()
     {
         base.OnEnable();
 
-        GameManager.PrepareGadgets += PrepareGadget;
+        GameManager.ReversePrepareGadgets += ReverseGadget;
     }
 
     protected new void OnDisable()
     {
         base.OnDisable();
 
-        GameManager.PrepareGadgets -= PrepareGadget;
+        GameManager.ReversePrepareGadgets -= ReverseGadget;
     }
 
     protected new void Awake()
@@ -34,8 +41,42 @@ public class Gadget : Cell
         gadgetDirection = Vector2Int.RoundToInt(transform.up); //replace this later!
     }
 
-    public void PrepareGadget()
+    protected new void FastenCells()
     {
+        base.FastenCells();
+
+        
+    }
+
+    private void ReverseGadget()
+    {
+        //compare current adjacent nodes and previous ones
+        List<Cell> currentAdjacentCells = new();
+        foreach (Vector2Int direction in directions)
+        {
+            //don't reverse if node is in front of gadget
+            if (direction == gadgetDirection) continue;
+
+            //continue if there's no cell in this direction or if it's not a node
+            if (!gridIndex.TryGetValue(currentPosition + direction * 2, out Cell adjacentCell)) continue;
+            if (adjacentCell is Gadget) continue;
+
+            currentAdjacentCells.Add(adjacentCell);
+        }
+
+        //if any nodes are adjacent that weren't last tick, reverse
+        foreach (Cell cell in currentAdjacentCells)
+            if (!adjacentNodes.Contains(cell))
+            {
+                isPulser = !isPulser;
+                sr.color = isPulser ? pulserColor : magnetColor;
+
+                break;
+            }
+
+        adjacentNodes = currentAdjacentCells;
+
+        //prepare gadget
         if (isPulser)
             PreparePulser();
         else
