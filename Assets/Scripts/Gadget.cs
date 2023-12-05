@@ -135,7 +135,6 @@ public class Gadget : Cell
                 return;
 
             //fail 3: moving cell off grid
-
             float maxMoveDistanceFromOrigin;
             float targetPositionDistanceFromOrigin;
                 //if moving along the y axis

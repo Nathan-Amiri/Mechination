@@ -118,9 +118,12 @@ public class Cell : MonoBehaviour
         //add the position this cell is preparing to move to to positionSafety. If position has been
         //claimed by another cell, declare the position unsafe
         if (!GameManager.positionSafety.TryGetValue(movePosition, out PositionSafetyInfo positionSafetyInfo))
-            GameManager.positionSafety.Add(movePosition, new PositionSafetyInfo { cellClaimingPosition = this });
+            GameManager.positionSafety.Add(movePosition, new PositionSafetyInfo { cellClaimingPosition = this, positionUnsafe = false });
         else if (positionSafetyInfo.cellClaimingPosition != this)
+        {
             positionSafetyInfo.positionUnsafe = true;
+            GameManager.positionSafety[movePosition] = positionSafetyInfo;
+        }
         //else if cellClaimingPosition IS this, do nothing
 
         //if there are cells fastened to this one, add each one if it isn't already moving
