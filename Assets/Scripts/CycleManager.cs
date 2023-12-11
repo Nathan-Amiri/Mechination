@@ -1,8 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class CycleManager : MonoBehaviour
 {
     //static:
     public delegate void FillGridIndexAction();
@@ -16,8 +17,6 @@ public class GameManager : MonoBehaviour
 
     public static float TickSpeed { get; private set; }
 
-    public static Vector2Int GridSize { get; private set; }
-
     public static List<Gadget> preparedGadgets = new();
 
         //positionSafety entry is set for each position a cell prepares to move into. If
@@ -25,14 +24,18 @@ public class GameManager : MonoBehaviour
         //is declared unsafe
     public static Dictionary<Vector2Int, PositionSafetyInfo> positionSafety = new();
 
+    //public:
+        //set by HUD
+    [NonSerialized] public float tickSpeedMultipler;
+
     //readonly:
-    private readonly float startDelay = .25f;
+    private readonly float defaultTickSpeed = .5f;
+
+    //dynamic:
+    private Coroutine cycleRoutine;
 
     private void Start()
     {
-        TickSpeed = .5f; //remove this later
-        GridSize = new Vector2Int(100, 100); //remove this later
-
         //first, all cells place their positions in the gridIndex
         FillGridIndex?.Invoke();
 
@@ -40,15 +43,10 @@ public class GameManager : MonoBehaviour
         FastenCells?.Invoke();
 
         //LATER, REMOVE ABOVE EVENTS
-
-        //finally, begin cycles
-        StartCoroutine(StartCycle());
     }
 
     private IEnumerator StartCycle()
     {
-        yield return new WaitForSeconds(startDelay);
-
         while (true)
         {
             Cycle();
@@ -74,6 +72,20 @@ public class GameManager : MonoBehaviour
         positionSafety.Clear();
     }
 
+    //called by HUD
+    public void ChangeTickSpeed(float newTickSpeedMultipler)
+    {
+        TickSpeed = defaultTickSpeed * newTickSpeedMultipler;
+    }
+
+    //called by HUD
+    public void StartStopCycle(bool start)
+    {
+        if (start)
+            cycleRoutine = StartCoroutine(StartCycle());
+        else
+            StopCoroutine(cycleRoutine);
+    }
 }
 public struct PositionSafetyInfo
 {

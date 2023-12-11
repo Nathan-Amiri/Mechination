@@ -35,8 +35,9 @@ public class MainCamera : MonoBehaviour
         fieldOfView = Mathf.Clamp(fieldOfView, minZoom, maxZoom);
         mainCamera.fieldOfView = fieldOfView;
 
-        //115 is the middle zoom amount. It's a constant, and its value only matters relative to panSensitivity's value
-        currentZoomAmount = fieldOfView / 115;
+        //115 is the middle zoom amount
+        //current zoom amount ranges from -.5 to 1.5
+        currentZoomAmount = (fieldOfView / 115) - 1;
     }
 
     private void Pan()
@@ -51,11 +52,13 @@ public class MainCamera : MonoBehaviour
         if (isPanning)
         {
             Vector3 mouseDelta = initialMousePosition - Input.mousePosition;
-            Vector3 cameraDelta = currentZoomAmount * panSensitivity * mouseDelta;
+            //increase pan speed exponentially based on zoom amount, with a growth rate of 50
+            Vector3 cameraDelta = panSensitivity * Mathf.Pow(50, currentZoomAmount) * mouseDelta;
+
             Vector3 targetCameraPosition = initialCameraPosition + cameraDelta;
 
-            targetCameraPosition.x = Mathf.Clamp(targetCameraPosition.x, -GameManager.GridSize.x, GameManager.GridSize.x);
-            targetCameraPosition.y = Mathf.Clamp(targetCameraPosition.y, -GameManager.GridSize.y, GameManager.GridSize.y);
+            targetCameraPosition.x = Mathf.Clamp(targetCameraPosition.x, -1000, 1000);
+            targetCameraPosition.y = Mathf.Clamp(targetCameraPosition.y, -1000, 1000);
             targetCameraPosition.z = transform.position.z;
 
             transform.position = targetCameraPosition;

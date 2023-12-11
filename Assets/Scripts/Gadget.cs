@@ -6,9 +6,12 @@ using UnityEngine;
 public class Gadget : Cell
 {
     //assigned in prefab:
-    [SerializeField] private SpriteRenderer sr;
+    [SerializeField] private SpriteRenderer cellSr;
+    [SerializeField] private SpriteRenderer iconSr;
     [SerializeField] private Color32 pulserColor;
     [SerializeField] private Color32 magnetColor;
+    [SerializeField] private Sprite pulserSprite;
+    [SerializeField] private Sprite magnetSprite;
 
     //readonly:
     [NonSerialized] public readonly List<Cell> movingCells = new();
@@ -24,14 +27,14 @@ public class Gadget : Cell
     {
         base.OnEnable();
 
-        GameManager.ReversePrepareGadgets += ReverseGadget;
+        CycleManager.ReversePrepareGadgets += ReverseGadget;
     }
 
     protected new void OnDisable()
     {
         base.OnDisable();
 
-        GameManager.ReversePrepareGadgets -= ReverseGadget;
+        CycleManager.ReversePrepareGadgets -= ReverseGadget;
     }
 
     protected new void Awake()
@@ -39,13 +42,6 @@ public class Gadget : Cell
         base.Awake();
 
         gadgetDirection = Vector2Int.RoundToInt(transform.up); //replace this later!
-    }
-
-    protected new void FastenCells()
-    {
-        base.FastenCells();
-
-        
     }
 
     private void ReverseGadget()
@@ -69,7 +65,8 @@ public class Gadget : Cell
             if (!adjacentNodes.Contains(cell))
             {
                 isPulser = !isPulser;
-                sr.color = isPulser ? pulserColor : magnetColor;
+                cellSr.color = isPulser ? pulserColor : magnetColor;
+                iconSr.sprite = isPulser ? pulserSprite : magnetSprite;
 
                 break;
             }
@@ -94,7 +91,7 @@ public class Gadget : Cell
         frontCell.GetMovingCell(this, gadgetDirection);
 
         //add to prepared gadgets
-        GameManager.preparedGadgets.Add(this);
+        CycleManager.preparedGadgets.Add(this);
     }
 
     private void PrepareMagnet()
@@ -112,7 +109,7 @@ public class Gadget : Cell
         targetCell.GetMovingCell(this, -gadgetDirection);
 
         //add to prepared gadgets
-        GameManager.preparedGadgets.Add(this);
+        CycleManager.preparedGadgets.Add(this);
     }
 
     public void ActivateGadget()
@@ -135,28 +132,22 @@ public class Gadget : Cell
                 return;
 
             //fail 3: moving cell off grid
-            float maxMoveDistanceFromOrigin;
+            //maxMoveDistanceFrom Origin = half of the grid's length (1000) x the grid's scale (2) = 1000
+            float maxMoveDistanceFromOrigin = 1000;
+
             float targetPositionDistanceFromOrigin;
                 //if moving along the y axis
             if (moveDirection.x == 0)
-            {
-                //maxMoveDistanceFrom Origin = half of GridSize.y times the grid's scale, which is 2 so it cancels out
-                maxMoveDistanceFromOrigin = GameManager.GridSize.y;
                 targetPositionDistanceFromOrigin = cell.preparedMovePosition.y;
-            }
                 //if moving along the x axis
             else
-            {
-                //maxMoveDistanceFrom Origin = half of GridSize.x times the grid's scale, which is 2 so it cancels out
-                maxMoveDistanceFromOrigin = GameManager.GridSize.x;
                 targetPositionDistanceFromOrigin = cell.preparedMovePosition.x;
-            }
 
             if (Mathf.Abs(targetPositionDistanceFromOrigin) > Mathf.Abs(maxMoveDistanceFromOrigin))
                 return;
 
             //fail 4: cell is moving into an unsafe space (a space other cell(s) are preparing to move into)
-            if (!GameManager.positionSafety.TryGetValue(cell.preparedMovePosition, out PositionSafetyInfo positionSafetyInfo))
+            if (!CycleManager.positionSafety.TryGetValue(cell.preparedMovePosition, out PositionSafetyInfo positionSafetyInfo))
                 Debug.LogError("position not found in positionSafe");
             else if (positionSafetyInfo.positionUnsafe == true)
                 return;

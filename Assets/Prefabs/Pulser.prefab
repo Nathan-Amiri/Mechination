@@ -32,7 +32,7 @@ Transform:
   m_Children:
   - {fileID: 7817405402373515512}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &5808424618155508164
 SpriteRenderer:
@@ -99,13 +99,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fastener: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
-  sr: {fileID: 5808424618155508164}
+  cellSr: {fileID: 5808424618155508164}
+  iconSr: {fileID: 5887956084928941815}
   pulserColor:
     serializedVersion: 2
     rgba: 4283453695
   magnetColor:
     serializedVersion: 2
     rgba: 4294950480
+  pulserSprite: {fileID: 21300000, guid: 21e078fd8cbda064f83e2080eef88aa5, type: 3}
+  magnetSprite: {fileID: 21300000, guid: 8ebc34dc65f55244688a45faeb01c8a2, type: 3}
   isPulser: 1
 --- !u!1 &3556278717869270909
 GameObject:

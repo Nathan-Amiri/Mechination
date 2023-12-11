@@ -30,13 +30,13 @@ public class Cell : MonoBehaviour
 
     protected void OnEnable()
     {
-        GameManager.FillGridIndex += FillGridIndex;
-        GameManager.FastenCells += FastenCells;
+        CycleManager.FillGridIndex += FillGridIndex;
+        CycleManager.FastenCells += FastenCells;
     }
     protected void OnDisable()
     {
-        GameManager.FillGridIndex -= FillGridIndex;
-        GameManager.FastenCells -= FastenCells;
+        CycleManager.FillGridIndex -= FillGridIndex;
+        CycleManager.FastenCells -= FastenCells;
     }
 
     protected void Awake() //before GameManager's Awake (temporary method!)
@@ -51,7 +51,7 @@ public class Cell : MonoBehaviour
     }
 
     //called by GameManager at the start of the game, after gridindex is filled
-    protected void FastenCells()
+    private void FastenCells()
     {
         List<Cell> cellsToFasten = new();
         foreach (Vector2Int direction in directions)
@@ -117,12 +117,12 @@ public class Cell : MonoBehaviour
 
         //add the position this cell is preparing to move to to positionSafety. If position has been
         //claimed by another cell, declare the position unsafe
-        if (!GameManager.positionSafety.TryGetValue(movePosition, out PositionSafetyInfo positionSafetyInfo))
-            GameManager.positionSafety.Add(movePosition, new PositionSafetyInfo { cellClaimingPosition = this, positionUnsafe = false });
+        if (!CycleManager.positionSafety.TryGetValue(movePosition, out PositionSafetyInfo positionSafetyInfo))
+            CycleManager.positionSafety.Add(movePosition, new PositionSafetyInfo { cellClaimingPosition = this, positionUnsafe = false });
         else if (positionSafetyInfo.cellClaimingPosition != this)
         {
             positionSafetyInfo.positionUnsafe = true;
-            GameManager.positionSafety[movePosition] = positionSafetyInfo;
+            CycleManager.positionSafety[movePosition] = positionSafetyInfo;
         }
         //else if cellClaimingPosition IS this, do nothing
 
@@ -162,9 +162,12 @@ public class Cell : MonoBehaviour
             //cache both since transform.position will change and preparedMovePosition will be reset
         Vector2 startPosition = transform.position;
         Vector2 endPosition = preparedMovePosition;
-        while (timeLerped < GameManager.TickSpeed)
+
+            //cache tick speed in case it changes during the lerp
+        float tickSpeed = CycleManager.TickSpeed;
+        while (timeLerped < tickSpeed)
         {
-            transform.position = Vector2.Lerp(startPosition, endPosition, timeLerped / GameManager.TickSpeed);
+            transform.position = Vector2.Lerp(startPosition, endPosition, timeLerped / tickSpeed);
             timeLerped += Time.deltaTime;
             yield return null;
         }

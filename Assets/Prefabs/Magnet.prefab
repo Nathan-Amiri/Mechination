@@ -116,7 +116,7 @@ Transform:
   m_Children:
   - {fileID: 3892037143587874311}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &3624891902112349124
 SpriteRenderer:
@@ -183,11 +183,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fastener: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
-  sr: {fileID: 3624891902112349124}
+  cellSr: {fileID: 3624891902112349124}
+  iconSr: {fileID: 4392671038003430210}
   pulserColor:
     serializedVersion: 2
     rgba: 4283453695
   magnetColor:
     serializedVersion: 2
     rgba: 4294950480
+  pulserSprite: {fileID: 21300000, guid: 21e078fd8cbda064f83e2080eef88aa5, type: 3}
+  magnetSprite: {fileID: 21300000, guid: 8ebc34dc65f55244688a45faeb01c8a2, type: 3}
   isPulser: 0
