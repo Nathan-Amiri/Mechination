@@ -13,6 +13,8 @@ public class Cell : MonoBehaviour
 
     //assigned in prefab:
     [SerializeField] private GameObject fastener;
+        //accesssed by HUD
+    public SpriteRenderer sr;
 
     //readonly:
     protected readonly List<Vector2Int> directions = new()

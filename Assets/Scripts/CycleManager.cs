@@ -25,7 +25,7 @@ public class CycleManager : MonoBehaviour
     public static Dictionary<Vector2Int, PositionSafetyInfo> positionSafety = new();
 
     //public:
-        //set by HUD
+        //accessed by HUD
     [NonSerialized] public float tickSpeedMultipler;
 
     //readonly:

@@ -99,6 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fastener: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
+  sr: {fileID: 9174507162531141949}
 --- !u!1 &5710119777882478467
 GameObject:
   m_ObjectHideFlags: 0

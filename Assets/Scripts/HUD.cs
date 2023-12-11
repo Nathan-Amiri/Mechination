@@ -12,8 +12,8 @@ public class HUD : MonoBehaviour
 
     list prefabs/celltypes/buttons
     buttons not interactable in play mode
+    prevent gadget reversal on play
 
-    colors
     rotation
 
     saves
@@ -50,6 +50,9 @@ public class HUD : MonoBehaviour
     [SerializeField] private Button nodeButton;
     [SerializeField] private Button eraserButton;
 
+    [SerializeField] private Image nodeImage;
+    [SerializeField] private Color32 nodeColor;
+
     public enum CellType { pulser, magnet, node, eraser }
     private CellType currentCellType;
 
@@ -60,10 +63,8 @@ public class HUD : MonoBehaviour
 
     private bool isPlaying;
 
-
     private void Start()
     {
-        RoundFloatToOddInt(1.9f);
         SelectEraser();
 
         if (PlayerPrefs.HasKey("tickSpeedMultiplier"))
@@ -128,16 +129,13 @@ public class HUD : MonoBehaviour
         //spawn new cell
         Cell newCell = Instantiate(prefToSpawn, (Vector2)gridPosition, Quaternion.identity, cellParent);
         Cell.gridIndex.Add(gridPosition, newCell);
+        if (currentCellType == CellType.node)
+            newCell.sr.color = nodeColor;
     }
 
     public int RoundFloatToOddInt(float f)
     {
-        int roundTowardZero = (int)f;
-        //if roundTowardZero is even, increase magnitude by 1. Else, return roundTowardZero
-        if (roundTowardZero % 2 == 0)
-            return roundTowardZero + (int)Mathf.Sign(f);
-        else
-            return roundTowardZero;
+        return Mathf.FloorToInt(f * 0.5f) * 2 + 1;
     }
 
     private void SetGadgetButtonsInteractable(Button newUninteractableButton)
@@ -223,9 +221,10 @@ public class HUD : MonoBehaviour
         currentGridPosition = default;
     }
 
-    public void NodeColor(int color)
+    public void NodeColor(Color32 newNodeColor)
     {
-
+        nodeImage.color = newNodeColor;
+        nodeColor = newNodeColor;
     }
 
     public void Tutorial()

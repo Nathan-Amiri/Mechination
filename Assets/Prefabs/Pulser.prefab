@@ -99,6 +99,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fastener: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
+  sr: {fileID: 5808424618155508164}
   cellSr: {fileID: 5808424618155508164}
   iconSr: {fileID: 5887956084928941815}
   pulserColor:

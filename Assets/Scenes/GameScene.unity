@@ -3875,6 +3875,10 @@ MonoBehaviour:
   magnetButton: {fileID: 489868768}
   nodeButton: {fileID: 513175421}
   eraserButton: {fileID: 1914309053}
+  nodeImage: {fileID: 513175422}
+  nodeColor:
+    serializedVersion: 2
+    rgba: 4293348786
 --- !u!1001 &531133960
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5047,6 +5051,7 @@ GameObject:
   - component: {fileID: 766568776}
   - component: {fileID: 766568775}
   - component: {fileID: 766568777}
+  - component: {fileID: 766568778}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -5156,10 +5161,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
-        m_MethodName: NodeColor
-        m_Mode: 3
+      - m_Target: {fileID: 766568778}
+        m_TargetAssemblyTypeName: ColorButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -5168,6 +5173,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &766568778
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 766568773}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e777c9051890bc40ada760c57068c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeColor:
+    serializedVersion: 2
+    rgba: 4282897501
+  hud: {fileID: 525741726}
 --- !u!1001 &768459163
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8277,6 +8298,7 @@ GameObject:
   - component: {fileID: 1197933195}
   - component: {fileID: 1197933194}
   - component: {fileID: 1197933196}
+  - component: {fileID: 1197933197}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -8386,10 +8408,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
-        m_MethodName: NodeColor
-        m_Mode: 3
+      - m_Target: {fileID: 1197933197}
+        m_TargetAssemblyTypeName: ColorButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -8398,6 +8420,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1197933197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1197933192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e777c9051890bc40ada760c57068c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeColor:
+    serializedVersion: 2
+    rgba: 4279506103
+  hud: {fileID: 525741726}
 --- !u!1 &1198379100
 GameObject:
   m_ObjectHideFlags: 0
@@ -8889,6 +8927,7 @@ GameObject:
   - component: {fileID: 1262011618}
   - component: {fileID: 1262011617}
   - component: {fileID: 1262011619}
+  - component: {fileID: 1262011620}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -8998,10 +9037,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
-        m_MethodName: NodeColor
-        m_Mode: 3
+      - m_Target: {fileID: 1262011620}
+        m_TargetAssemblyTypeName: ColorButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -9010,6 +9049,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1262011620
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1262011615}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e777c9051890bc40ada760c57068c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeColor:
+    serializedVersion: 2
+    rgba: 4281263589
+  hud: {fileID: 525741726}
 --- !u!1001 &1270104081
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -9660,6 +9715,7 @@ GameObject:
   - component: {fileID: 1391566443}
   - component: {fileID: 1391566442}
   - component: {fileID: 1391566444}
+  - component: {fileID: 1391566445}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -9769,10 +9825,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
-        m_MethodName: NodeColor
-        m_Mode: 3
+      - m_Target: {fileID: 1391566445}
+        m_TargetAssemblyTypeName: ColorButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -9781,6 +9837,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1391566445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1391566440}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e777c9051890bc40ada760c57068c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeColor:
+    serializedVersion: 2
+    rgba: 4278220799
+  hud: {fileID: 525741726}
 --- !u!1001 &1431558707
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13884,6 +13956,7 @@ GameObject:
   - component: {fileID: 2091069401}
   - component: {fileID: 2091069400}
   - component: {fileID: 2091069402}
+  - component: {fileID: 2091069403}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -13993,10 +14066,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
-        m_MethodName: NodeColor
-        m_Mode: 3
+      - m_Target: {fileID: 2091069403}
+        m_TargetAssemblyTypeName: ColorButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -14005,6 +14078,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2091069403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2091069398}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e777c9051890bc40ada760c57068c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeColor:
+    serializedVersion: 2
+    rgba: 4293348786
+  hud: {fileID: 525741726}
 --- !u!1 &2094903881
 GameObject:
   m_ObjectHideFlags: 0
@@ -14017,6 +14106,7 @@ GameObject:
   - component: {fileID: 2094903884}
   - component: {fileID: 2094903883}
   - component: {fileID: 2094903885}
+  - component: {fileID: 2094903886}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -14126,10 +14216,10 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
-        m_MethodName: NodeColor
-        m_Mode: 3
+      - m_Target: {fileID: 2094903886}
+        m_TargetAssemblyTypeName: ColorButton, Assembly-CSharp
+        m_MethodName: OnClick
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -14138,6 +14228,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &2094903886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2094903881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e777c9051890bc40ada760c57068c63, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  nodeColor:
+    serializedVersion: 2
+    rgba: 4294928714
+  hud: {fileID: 525741726}
 --- !u!1001 &2096210307
 PrefabInstance:
   m_ObjectHideFlags: 0
