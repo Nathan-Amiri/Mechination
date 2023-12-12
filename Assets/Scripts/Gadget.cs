@@ -17,23 +17,20 @@ public class Gadget : Cell
     [NonSerialized] public readonly List<Cell> movingCells = new();
 
     //dynamic:
-    [SerializeField] private bool isPulser; //else is magnet
+        //read by HUD. If false, is magnet
+    public bool isPulser;
 
     [NonSerialized] public Vector2Int gadgetDirection;
 
     [NonSerialized] public List<Cell> adjacentNodes = new();
 
-    protected new void OnEnable()
+    protected void OnEnable()
     {
-        base.OnEnable();
-
         CycleManager.ReversePrepareGadgets += ReverseGadget;
     }
 
-    protected new void OnDisable()
+    protected void OnDisable()
     {
-        base.OnDisable();
-
         CycleManager.ReversePrepareGadgets -= ReverseGadget;
     }
 

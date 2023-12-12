@@ -6,12 +6,6 @@ using UnityEngine;
 public class CycleManager : MonoBehaviour
 {
     //static:
-    public delegate void FillGridIndexAction();
-    public static FillGridIndexAction FillGridIndex;
-
-    public delegate void FastenCellsAction();
-    public static FastenCellsAction FastenCells;
-
     public delegate void ReversePrepareGadgetsAction();
     public static ReversePrepareGadgetsAction ReversePrepareGadgets;
 
@@ -33,17 +27,6 @@ public class CycleManager : MonoBehaviour
 
     //dynamic:
     private Coroutine cycleRoutine;
-
-    private void Start()
-    {
-        //first, all cells place their positions in the gridIndex
-        FillGridIndex?.Invoke();
-
-        //then, all cells form attachments
-        FastenCells?.Invoke();
-
-        //LATER, REMOVE ABOVE EVENTS
-    }
 
     private IEnumerator StartCycle()
     {

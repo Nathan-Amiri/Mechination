@@ -3875,6 +3875,8 @@ MonoBehaviour:
   magnetButton: {fileID: 489868768}
   nodeButton: {fileID: 513175421}
   eraserButton: {fileID: 1914309053}
+  pulserTR: {fileID: 1623715057}
+  magnetTR: {fileID: 1851420721}
   nodeImage: {fileID: 513175422}
   nodeColor:
     serializedVersion: 2
@@ -11090,7 +11092,7 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1623715056}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0

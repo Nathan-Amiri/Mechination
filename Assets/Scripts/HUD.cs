@@ -10,22 +10,25 @@ public class HUD : MonoBehaviour
     /*
     todo:
 
-    list prefabs/celltypes/buttons
-    buttons not interactable in play mode
+    rotation
+        gridposition not changing means rotation code isn't reached when mousebutton is down again
+        I need to allow for mouse button down for rotation
+        multiplying pulserRotation by (0, 0, 90) does nothing
+
+    reorganize variables
+
     prevent gadget reversal on play
 
-    rotation
+    fastening
 
-    saves
-
-    tutorial
-
-    save/exit popups
+    saves (save current loadout in playerprefs, load on start)
 
     play saves before playing
     stop reloads save
 
-    fastening
+    save/exit popups
+
+    tutorial (start game first time with how to play, save in playerprefs to not do again)
     */
 
 
@@ -50,11 +53,16 @@ public class HUD : MonoBehaviour
     [SerializeField] private Button nodeButton;
     [SerializeField] private Button eraserButton;
 
+    [SerializeField] private Transform pulserTR;
+    [SerializeField] private Transform magnetTR;
+
     [SerializeField] private Image nodeImage;
     [SerializeField] private Color32 nodeColor;
 
     public enum CellType { pulser, magnet, node, eraser }
     private CellType currentCellType;
+
+    private Button currentCellButton;
 
     private Vector2Int currentGridPosition;
 
@@ -62,6 +70,10 @@ public class HUD : MonoBehaviour
     private float currentTickSpeedMultiplier = 1;
 
     private bool isPlaying;
+
+    private Quaternion pulserRotation = Quaternion.identity;
+    private Quaternion magnetRotation;
+
 
     private void Start()
     {
@@ -75,8 +87,9 @@ public class HUD : MonoBehaviour
 
     private void Update()
     {
-        bool mouseOverUI = EventSystem.current.IsPointerOverGameObject();
+        if (isPlaying) return;
 
+        bool mouseOverUI = EventSystem.current.IsPointerOverGameObject();
         if (Input.GetMouseButton(0) && !mouseOverUI)
             SpawnCell();
     }
@@ -97,13 +110,21 @@ public class HUD : MonoBehaviour
     {
         //get prefab
         Cell prefToSpawn = null;
-        if (currentCellType == CellType.pulser)
-            prefToSpawn = pulserPref;
-        else if (currentCellType == CellType.magnet)
-            prefToSpawn = magnetPref;
-        else if (currentCellType == CellType.node)
+        Quaternion spawnRotation = Quaternion.identity;
+        if (currentCellType == CellType.node)
             prefToSpawn = nodePref;
-            //else remain null
+            //spawnRotation remains default
+        else if (currentCellType == CellType.pulser)
+        {
+            prefToSpawn = pulserPref;
+            spawnRotation = pulserRotation;
+        }
+        else if (currentCellType == CellType.magnet)
+        {
+            prefToSpawn = magnetPref;
+            spawnRotation = magnetRotation;
+        }
+        //else remain null
 
         //get grid position
         Vector3 mousePos = Input.mousePosition;
@@ -116,9 +137,26 @@ public class HUD : MonoBehaviour
         //else update currentGridPosition
         currentGridPosition = gridPosition;
 
-        //erase cell if it exists
+        //if cell exists, check if rotation is necessary, then erase cell
         if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
         {
+            //if cell is a gadget of the selected type, rotate
+            if (GadgetWillRotate(cellAtPosition))
+            {
+                spawnRotation *= Quaternion.Euler(0, 0, -90);
+
+                if (currentCellType == CellType.pulser)
+                {
+                    pulserRotation *= Quaternion.Euler(0, 0, -90);
+                    pulserTR.rotation = pulserRotation;
+                }
+                else //if magnet
+                {
+                    magnetRotation *= Quaternion.Euler(0, 0, -90);
+                    magnetTR.rotation = magnetRotation;
+                }
+            }
+
             Destroy(cellAtPosition.gameObject);
             Cell.gridIndex.Remove(gridPosition);
         }
@@ -127,18 +165,38 @@ public class HUD : MonoBehaviour
         if (prefToSpawn == null) return;
 
         //spawn new cell
-        Cell newCell = Instantiate(prefToSpawn, (Vector2)gridPosition, Quaternion.identity, cellParent);
+        Cell newCell = Instantiate(prefToSpawn, (Vector2)gridPosition, spawnRotation, cellParent);
         Cell.gridIndex.Add(gridPosition, newCell);
         if (currentCellType == CellType.node)
             newCell.sr.color = nodeColor;
+
+        //fasten cell
+
     }
 
-    public int RoundFloatToOddInt(float f)
+    private bool GadgetWillRotate(Cell cellAtSpawnPosition)
+    {
+        //check if cell is a gadget
+        if (cellAtSpawnPosition is not Gadget gadget)
+            return false;
+
+        //check if a gadget is selected
+        if (currentCellType == CellType.node || currentCellType == CellType.eraser)
+            return false;
+
+        //check if the gadget is of the selected type
+        if (gadget.isPulser != (currentCellType == CellType.pulser))
+            return false;
+
+        return true;
+    }
+
+    private int RoundFloatToOddInt(float f)
     {
         return Mathf.FloorToInt(f * 0.5f) * 2 + 1;
     }
 
-    private void SetGadgetButtonsInteractable(Button newUninteractableButton)
+    private void SetCellButtonsInteractable(Button newUninteractableButton)
     {
         pulserButton.interactable = true;
         magnetButton.interactable = true;
@@ -146,7 +204,10 @@ public class HUD : MonoBehaviour
         eraserButton.interactable = true;
 
         if (newUninteractableButton != null)
+        {
             newUninteractableButton.interactable = false;
+            currentCellButton = newUninteractableButton;
+        }
     }
 
     public void Exit()
@@ -166,15 +227,21 @@ public class HUD : MonoBehaviour
 
     public void PlayStop()
     {
-        //make buttons, celltypes, and prefabs into list that can be iterated through
-
-
-        if (!isPlaying)
-            SetGadgetButtonsInteractable(null);
-
         cycleManager.StartStopCycle(!isPlaying);
 
         isPlaying = !isPlaying;
+
+        if (isPlaying)
+        {
+            pulserButton.interactable = false;
+            magnetButton.interactable = false;
+            nodeButton.interactable = false;
+            eraserButton.interactable = false;
+        }
+        else
+        {
+            SetCellButtonsInteractable(currentCellButton);
+        }
 
         playIcon.SetActive(!isPlaying);
         stopIcon.SetActive(isPlaying);
@@ -196,28 +263,28 @@ public class HUD : MonoBehaviour
     public void SelectPulser()
     {
         currentCellType = CellType.pulser;
-        SetGadgetButtonsInteractable(pulserButton);
+        SetCellButtonsInteractable(pulserButton);
         currentGridPosition = default;
     }
 
     public void SelectMagnet()
     {
         currentCellType = CellType.magnet;
-        SetGadgetButtonsInteractable(magnetButton);
+        SetCellButtonsInteractable(magnetButton);
         currentGridPosition = default;
     }
 
     public void SelectNode()
     {
         currentCellType = CellType.node;
-        SetGadgetButtonsInteractable(nodeButton);
+        SetCellButtonsInteractable(nodeButton);
         currentGridPosition = default;
     }
 
     public void SelectEraser()
     {
         currentCellType = CellType.eraser;
-        SetGadgetButtonsInteractable(eraserButton);
+        SetCellButtonsInteractable(eraserButton);
         currentGridPosition = default;
     }
 

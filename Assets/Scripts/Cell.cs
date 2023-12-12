@@ -30,17 +30,6 @@ public class Cell : MonoBehaviour
 
     [NonSerialized] public Vector2Int currentPosition;
 
-    protected void OnEnable()
-    {
-        CycleManager.FillGridIndex += FillGridIndex;
-        CycleManager.FastenCells += FastenCells;
-    }
-    protected void OnDisable()
-    {
-        CycleManager.FillGridIndex -= FillGridIndex;
-        CycleManager.FastenCells -= FastenCells;
-    }
-
     protected void Awake() //before GameManager's Awake (temporary method!)
     {
         currentPosition = Vector2Int.RoundToInt(transform.position); //replace this later!
