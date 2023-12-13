@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Gadget : Cell
 {
-    //assigned in prefab:
+    //PREFAB REFERENCE:
     [SerializeField] private SpriteRenderer cellSr;
     [SerializeField] private SpriteRenderer iconSr;
     [SerializeField] private Color32 pulserColor;
@@ -13,10 +13,10 @@ public class Gadget : Cell
     [SerializeField] private Sprite pulserSprite;
     [SerializeField] private Sprite magnetSprite;
 
-    //readonly:
+    //CONSTANT:
     [NonSerialized] public readonly List<Cell> movingCells = new();
 
-    //dynamic:
+    //DYNAMIC:
         //read by HUD. If false, is magnet
     public bool isPulser;
 

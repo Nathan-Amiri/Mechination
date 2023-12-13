@@ -10,13 +10,6 @@ public class HUD : MonoBehaviour
     /*
     todo:
 
-    rotation
-        gridposition not changing means rotation code isn't reached when mousebutton is down again
-        I need to allow for mouse button down for rotation
-        multiplying pulserRotation by (0, 0, 90) does nothing
-
-    reorganize variables
-
     prevent gadget reversal on play
 
     fastening
@@ -32,7 +25,7 @@ public class HUD : MonoBehaviour
     */
 
 
-
+    //SCENE REFERENCE
     [SerializeField] private Cell pulserPref;
     [SerializeField] private Cell magnetPref;
     [SerializeField] private Cell nodePref;
@@ -53,12 +46,13 @@ public class HUD : MonoBehaviour
     [SerializeField] private Button nodeButton;
     [SerializeField] private Button eraserButton;
 
-    [SerializeField] private Transform pulserTR;
-    [SerializeField] private Transform magnetTR;
+    [SerializeField] private Transform pulserButtonTR;
+    [SerializeField] private Transform magnetButtonTR;
 
     [SerializeField] private Image nodeImage;
     [SerializeField] private Color32 nodeColor;
 
+    //DYNAMIC
     public enum CellType { pulser, magnet, node, eraser }
     private CellType currentCellType;
 
@@ -71,7 +65,7 @@ public class HUD : MonoBehaviour
 
     private bool isPlaying;
 
-    private Quaternion pulserRotation = Quaternion.identity;
+    private Quaternion pulserRotation;
     private Quaternion magnetRotation;
 
 
@@ -89,8 +83,14 @@ public class HUD : MonoBehaviour
     {
         if (isPlaying) return;
 
-        bool mouseOverUI = EventSystem.current.IsPointerOverGameObject();
-        if (Input.GetMouseButton(0) && !mouseOverUI)
+        //check if mouse is over ui
+        if (EventSystem.current.IsPointerOverGameObject()) return;
+
+        //rotate before spawning so that the spawned cell will be of the correct rotation
+        if (Input.GetMouseButtonDown(0))
+            RotateGadget();
+
+        if (Input.GetMouseButton(0))
             SpawnCell();
     }
 
@@ -104,6 +104,36 @@ public class HUD : MonoBehaviour
 
         //change tick speed using reciprocal
         cycleManager.ChangeTickSpeed(1 / newMultiplier);
+    }
+
+    private void RotateGadget()
+    {
+        //check if a gadget is selected
+        if (currentCellType == CellType.node || currentCellType == CellType.eraser) return;
+
+        //check if cell exists at mouse position
+        Vector2Int gridPosition = MouseGridPosition();
+        if (!Cell.gridIndex.TryGetValue(gridPosition, out Cell cell)) return;
+
+        //check if cell is a gadget
+        if (cell is not Gadget gadget) return;
+
+        //check if the gadget is of the selected type
+        if (gadget.isPulser != (currentCellType == CellType.pulser)) return;
+
+        //rotate gadget, gadget button, and future spawned gadgets of the selected type
+        gadget.transform.rotation *= Quaternion.Euler(0, 0, -90);
+
+        if (gadget.isPulser)
+        {
+            pulserRotation = gadget.transform.rotation;
+            pulserButtonTR.rotation = pulserRotation;
+        }
+        else //if magnet
+        {
+            magnetRotation = gadget.transform.rotation;
+            magnetButtonTR.rotation = pulserRotation;
+        }
     }
 
     private void SpawnCell()
@@ -127,10 +157,7 @@ public class HUD : MonoBehaviour
         //else remain null
 
         //get grid position
-        Vector3 mousePos = Input.mousePosition;
-        mousePos.z = 10;
-        Vector3 selectedPosition = mainCamera.ScreenToWorldPoint(mousePos);
-        Vector2Int gridPosition = new(RoundFloatToOddInt(selectedPosition.x), RoundFloatToOddInt(selectedPosition.y));
+        Vector2Int gridPosition = MouseGridPosition();
 
         //if grid position hasn't changed, return
         if (gridPosition == currentGridPosition) return;
@@ -140,23 +167,6 @@ public class HUD : MonoBehaviour
         //if cell exists, check if rotation is necessary, then erase cell
         if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
         {
-            //if cell is a gadget of the selected type, rotate
-            if (GadgetWillRotate(cellAtPosition))
-            {
-                spawnRotation *= Quaternion.Euler(0, 0, -90);
-
-                if (currentCellType == CellType.pulser)
-                {
-                    pulserRotation *= Quaternion.Euler(0, 0, -90);
-                    pulserTR.rotation = pulserRotation;
-                }
-                else //if magnet
-                {
-                    magnetRotation *= Quaternion.Euler(0, 0, -90);
-                    magnetTR.rotation = magnetRotation;
-                }
-            }
-
             Destroy(cellAtPosition.gameObject);
             Cell.gridIndex.Remove(gridPosition);
         }
@@ -174,21 +184,12 @@ public class HUD : MonoBehaviour
 
     }
 
-    private bool GadgetWillRotate(Cell cellAtSpawnPosition)
+    private Vector2Int MouseGridPosition()
     {
-        //check if cell is a gadget
-        if (cellAtSpawnPosition is not Gadget gadget)
-            return false;
-
-        //check if a gadget is selected
-        if (currentCellType == CellType.node || currentCellType == CellType.eraser)
-            return false;
-
-        //check if the gadget is of the selected type
-        if (gadget.isPulser != (currentCellType == CellType.pulser))
-            return false;
-
-        return true;
+        Vector3 mousePos = Input.mousePosition;
+        mousePos.z = 10;
+        Vector3 selectedPosition = mainCamera.ScreenToWorldPoint(mousePos);
+        return new(RoundFloatToOddInt(selectedPosition.x), RoundFloatToOddInt(selectedPosition.y));
     }
 
     private int RoundFloatToOddInt(float f)

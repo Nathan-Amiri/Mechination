@@ -5,25 +5,24 @@ using UnityEngine;
 
 public class Cell : MonoBehaviour
 {
-    //static:
+    //STATIC:
     public static Dictionary<Vector2Int, Cell> gridIndex = new();
 
-    //key = a cell with fastenings, value = list of cells the key cell is fastened to
+        //key = a cell with fastenings, value = list of cells the key cell is fastened to
     public static Dictionary<Cell, List<Cell>> fastenedCells = new();
 
-    //assigned in prefab:
+    //PREFAB REFERENCE:
     [SerializeField] private GameObject fastener;
         //accesssed by HUD
     public SpriteRenderer sr;
 
-    //readonly:
+    //CONSTANT:
     protected readonly List<Vector2Int> directions = new()
     {
         Vector2Int.right, Vector2Int.left, Vector2Int.up, Vector2Int.down
     };
 
-    //dynamic:
-
+    //DYNAMIC:
     [NonSerialized] public Vector2Int preparedMovePosition;
         //true when this cell is preparing to move into more than one position
     [NonSerialized] public bool tearFail;

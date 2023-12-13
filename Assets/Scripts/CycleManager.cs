@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CycleManager : MonoBehaviour
 {
-    //static:
+    //STATIC:
     public delegate void ReversePrepareGadgetsAction();
     public static ReversePrepareGadgetsAction ReversePrepareGadgets;
 
@@ -18,14 +18,13 @@ public class CycleManager : MonoBehaviour
         //is declared unsafe
     public static Dictionary<Vector2Int, PositionSafetyInfo> positionSafety = new();
 
-    //public:
+    //CONSTANT:
+    private readonly float defaultTickSpeed = .5f;
+
+    //DYNAMIC:
         //accessed by HUD
     [NonSerialized] public float tickSpeedMultipler;
 
-    //readonly:
-    private readonly float defaultTickSpeed = .5f;
-
-    //dynamic:
     private Coroutine cycleRoutine;
 
     private IEnumerator StartCycle()

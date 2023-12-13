@@ -3875,8 +3875,8 @@ MonoBehaviour:
   magnetButton: {fileID: 489868768}
   nodeButton: {fileID: 513175421}
   eraserButton: {fileID: 1914309053}
-  pulserTR: {fileID: 1623715057}
-  magnetTR: {fileID: 1851420721}
+  pulserButtonTR: {fileID: 1731454710}
+  magnetButtonTR: {fileID: 489868767}
   nodeImage: {fileID: 513175422}
   nodeColor:
     serializedVersion: 2
