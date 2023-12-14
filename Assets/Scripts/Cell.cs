@@ -33,6 +33,10 @@ public class Cell : MonoBehaviour
         //set by HUD when Cell is spawned
     [NonSerialized] public Vector2Int currentPosition;
 
+    //used for layout saving:
+    [NonSerialized] public int cellType; //0 = node, 1 = pulser, 2 = magnet
+    [NonSerialized] public int nodeColorNumber;
+
     public void FastenCell()
     {
         List<Cell> cellsToFasten = new();
@@ -198,5 +202,10 @@ public class Cell : MonoBehaviour
     {
         preparedMovePosition = Vector2Int.zero;
         tearFail = false;
+    }
+
+    public int GetRotation()
+    {
+        return Mathf.RoundToInt(transform.rotation.eulerAngles.z);
     }
 }

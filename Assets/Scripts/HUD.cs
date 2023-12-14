@@ -28,6 +28,7 @@ public class HUD : MonoBehaviour
     [SerializeField] private Cell nodePref;
 
     [SerializeField] private CycleManager cycleManager;
+    [SerializeField] private SaveLayout saveLayout;
 
     [SerializeField] private Camera mainCamera;
 
@@ -50,23 +51,23 @@ public class HUD : MonoBehaviour
     [SerializeField] private Transform magnetButtonTR;
 
     [SerializeField] private Image nodeImage;
-    [SerializeField] private Color32 nodeColor;
+    [SerializeField] private List<Color32> nodeColors;
 
     //DYNAMIC
-    public enum CellType { pulser, magnet, node, eraser }
-    private CellType currentCellType;
+    public enum SpawnType { pulser, magnet, node, eraser }
+    private SpawnType currentSpawnType;
 
     private Button currentCellButton;
-
-    private Vector2Int currentGridPosition;
 
     private readonly List<float> tickSpeedMultipliers = new() { .25f, .5f, 1, 2, 4 };
     private float currentTickSpeedMultiplier = 1;
 
     private bool isPlaying;
 
-    private Quaternion pulserRotation;
-    private Quaternion magnetRotation;
+    private int pulserZRotation;
+    private int magnetZRotation;
+
+    private int currentNodeColorNumber;
 
 
     private void Start()
@@ -97,7 +98,7 @@ public class HUD : MonoBehaviour
     private void RotateGadget()
     {
         //check if a gadget is selected
-        if (currentCellType == CellType.node || currentCellType == CellType.eraser) return;
+        if (currentSpawnType == SpawnType.node || currentSpawnType == SpawnType.eraser) return;
 
         //check if cell exists at mouse position
         Vector2Int gridPosition = MouseGridPosition();
@@ -107,7 +108,7 @@ public class HUD : MonoBehaviour
         if (cell is not Gadget gadget) return;
 
         //check if the gadget is of the selected type
-        if (gadget.isPulser != (currentCellType == CellType.pulser)) return;
+        if (gadget.isPulser != (currentSpawnType == SpawnType.pulser)) return;
 
         //rotate gadget, gadget button, and future spawned gadgets of the selected type
         gadget.transform.rotation *= Quaternion.Euler(0, 0, -90);
@@ -115,51 +116,74 @@ public class HUD : MonoBehaviour
 
         if (gadget.isPulser)
         {
-            pulserRotation = gadget.transform.rotation;
-            pulserButtonTR.rotation = pulserRotation;
+            pulserZRotation = Mathf.RoundToInt(gadget.transform.rotation.eulerAngles.z);
+            pulserButtonTR.rotation = gadget.transform.rotation;
         }
         else //if magnet
         {
-            magnetRotation = gadget.transform.rotation;
-            magnetButtonTR.rotation = pulserRotation;
+            magnetZRotation = Mathf.RoundToInt(gadget.transform.rotation.eulerAngles.z);
+            magnetButtonTR.rotation = gadget.transform.rotation;
         }
+
+        //unfasten and refasten gadget after rotating
+        gadget.UnFastenCell();
+        gadget.FastenCell();
     }
 
     private void SpawnCell()
     {
         //get prefab
         Cell prefToSpawn = null;
+
         Quaternion spawnRotation = Quaternion.identity;
-        if (currentCellType == CellType.node)
+            //used for layout saving
+        int newCellType = 0;
+
+        if (currentSpawnType == SpawnType.node)
             prefToSpawn = nodePref;
-            //spawnRotation remains default
-        else if (currentCellType == CellType.pulser)
+            //spawnRotation and cellType remains default
+        else if (currentSpawnType == SpawnType.pulser)
         {
             prefToSpawn = pulserPref;
-            spawnRotation = pulserRotation;
+            spawnRotation = Quaternion.Euler(0, 0, pulserZRotation);
+            newCellType = 1;
         }
-        else if (currentCellType == CellType.magnet)
+        else if (currentSpawnType == SpawnType.magnet)
         {
             prefToSpawn = magnetPref;
-            spawnRotation = magnetRotation;
+            spawnRotation = Quaternion.Euler(0, 0, magnetZRotation);
+            newCellType = 2;
         }
         //else remain null
 
         //get grid position
         Vector2Int gridPosition = MouseGridPosition();
 
-        //if grid position hasn't changed, return
-        if (gridPosition == currentGridPosition) return;
-        //else update currentGridPosition
-        currentGridPosition = gridPosition;
+        //if cell exists and spawntype isn't eraser, return if cell is identical to cell that would be spawned
+        bool cellExistsAtPosition = Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition);
 
-        //if cell exists, check if rotation is necessary, then erase cell
-        if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
+        if (cellExistsAtPosition && currentSpawnType != SpawnType.eraser)
+        {
+            //check if cell is node and color is identical
+            if (currentSpawnType == SpawnType.node && cellAtPosition.nodeColorNumber == currentNodeColorNumber) return;
+
+            //check if cell is gadget and gadget type is identical
+            if (cellAtPosition is Gadget gadget && gadget.isPulser == (currentSpawnType == SpawnType.pulser))
+            {
+                //check if rotation is identical
+                int currentGadgetRotation = gadget.isPulser ? pulserZRotation : magnetZRotation;
+                if (gadget.GetRotation() == currentGadgetRotation) return;
+            }
+        }
+
+        //erase cell if it exists
+        if (cellExistsAtPosition)
         {
             cellAtPosition.UnFastenCell();
             Destroy(cellAtPosition.gameObject);
             Cell.gridIndex.Remove(gridPosition);
         }
+
 
         //if eraser, return
         if (prefToSpawn == null) return;
@@ -168,11 +192,16 @@ public class HUD : MonoBehaviour
         Cell newCell = Instantiate(prefToSpawn, (Vector2)gridPosition, spawnRotation, cellParent);
         Cell.gridIndex.Add(gridPosition, newCell);
         newCell.currentPosition = gridPosition;
-        if (newCell is Gadget gadget)
+        newCell.cellType = newCellType;
+
+        if (newCell is Gadget newGadget)
             //must set gadgetDirection before fastening
-            gadget.gadgetDirection = Vector2Int.RoundToInt(gadget.transform.up);
+            newGadget.gadgetDirection = Vector2Int.RoundToInt(newGadget.transform.up);
         else //if node
-            newCell.sr.color = nodeColor;
+        {
+            newCell.sr.color = nodeColors[currentNodeColorNumber];
+            newCell.nodeColorNumber = currentNodeColorNumber;
+        }
 
         //fasten cell
         newCell.FastenCell();
@@ -242,6 +271,8 @@ public class HUD : MonoBehaviour
 
         playIcon.SetActive(!isPlaying);
         stopIcon.SetActive(isPlaying);
+
+        saveLayout.WriteFile();
     }
 
     public void TickMultipler()
@@ -259,37 +290,33 @@ public class HUD : MonoBehaviour
 
     public void SelectPulser()
     {
-        currentCellType = CellType.pulser;
+        currentSpawnType = SpawnType.pulser;
         SetCellButtonsInteractable(pulserButton);
-        currentGridPosition = default;
 
         ToggleEraser(true);
     }
 
     public void SelectMagnet()
     {
-        currentCellType = CellType.magnet;
+        currentSpawnType = SpawnType.magnet;
         SetCellButtonsInteractable(magnetButton);
-        currentGridPosition = default;
 
         ToggleEraser(true);
     }
 
     public void SelectNode()
     {
-        currentCellType = CellType.node;
+        currentSpawnType = SpawnType.node;
         SetCellButtonsInteractable(nodeButton);
-        currentGridPosition = default;
 
         ToggleEraser(true);
     }
 
     public void SelectEraserTrash()
     {
-        currentCellType = CellType.eraser;
+        currentSpawnType = SpawnType.eraser;
         //turn on all buttons
         SetCellButtonsInteractable(null);
-        currentGridPosition = default;
 
         ToggleEraser(false);
     }
@@ -300,10 +327,10 @@ public class HUD : MonoBehaviour
         clearIcon.SetActive(!eraserOn);
     }
 
-    public void NodeColor(Color32 newNodeColor)
+    public void NodeColor(int colorNumber)
     {
-        nodeImage.color = newNodeColor;
-        nodeColor = newNodeColor;
+        nodeImage.color = nodeColors[colorNumber];
+        currentNodeColorNumber = colorNumber;
     }
 
     public void Tutorial()
