@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c206934369808de4eadf1da5228a0ae1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fastener: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
+  fastenerPref: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
   sr: {fileID: 5808424618155508164}
   cellSr: {fileID: 5808424618155508164}
   iconSr: {fileID: 5887956084928941815}

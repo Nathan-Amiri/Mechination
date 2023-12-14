@@ -10,16 +10,13 @@ public class HUD : MonoBehaviour
     /*
     todo:
 
-    prevent gadget reversal on play
-
-    fastening
-
     saves (save current loadout in playerprefs, load on start)
 
     play saves before playing
     stop reloads save
 
-    save/exit popups
+    clear
+    clear/save/exit popups
 
     tutorial (start game first time with how to play, save in playerprefs to not do again)
     */
@@ -38,6 +35,9 @@ public class HUD : MonoBehaviour
 
     [SerializeField] private GameObject playIcon;
     [SerializeField] private GameObject stopIcon;
+
+    [SerializeField] private GameObject eraserIcon;
+    [SerializeField] private GameObject clearIcon;
 
     [SerializeField] private TMP_Text tickSpeedMultiplierText;
 
@@ -71,7 +71,7 @@ public class HUD : MonoBehaviour
 
     private void Start()
     {
-        SelectEraser();
+        SelectEraserTrash();
 
         if (PlayerPrefs.HasKey("tickSpeedMultiplier"))
             UpdateTickMultiplier(PlayerPrefs.GetFloat("tickSpeedMultiplier"));
@@ -94,18 +94,6 @@ public class HUD : MonoBehaviour
             SpawnCell();
     }
 
-    private void UpdateTickMultiplier(float newMultiplier)
-    {
-        //set text. Remove 0 from 0.25 and 0.5
-        tickSpeedMultiplierText.text = newMultiplier.ToString().TrimStart('0') + "x";
-
-        //reset current multiplier
-        currentTickSpeedMultiplier = newMultiplier;
-
-        //change tick speed using reciprocal
-        cycleManager.ChangeTickSpeed(1 / newMultiplier);
-    }
-
     private void RotateGadget()
     {
         //check if a gadget is selected
@@ -123,6 +111,7 @@ public class HUD : MonoBehaviour
 
         //rotate gadget, gadget button, and future spawned gadgets of the selected type
         gadget.transform.rotation *= Quaternion.Euler(0, 0, -90);
+        gadget.gadgetDirection = Vector2Int.RoundToInt(gadget.transform.up);
 
         if (gadget.isPulser)
         {
@@ -167,6 +156,7 @@ public class HUD : MonoBehaviour
         //if cell exists, check if rotation is necessary, then erase cell
         if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
         {
+            cellAtPosition.UnFastenCell();
             Destroy(cellAtPosition.gameObject);
             Cell.gridIndex.Remove(gridPosition);
         }
@@ -177,11 +167,15 @@ public class HUD : MonoBehaviour
         //spawn new cell
         Cell newCell = Instantiate(prefToSpawn, (Vector2)gridPosition, spawnRotation, cellParent);
         Cell.gridIndex.Add(gridPosition, newCell);
-        if (currentCellType == CellType.node)
+        newCell.currentPosition = gridPosition;
+        if (newCell is Gadget gadget)
+            //must set gadgetDirection before fastening
+            gadget.gadgetDirection = Vector2Int.RoundToInt(gadget.transform.up);
+        else //if node
             newCell.sr.color = nodeColor;
 
         //fasten cell
-
+        newCell.FastenCell();
     }
 
     private Vector2Int MouseGridPosition()
@@ -197,18 +191,30 @@ public class HUD : MonoBehaviour
         return Mathf.FloorToInt(f * 0.5f) * 2 + 1;
     }
 
-    private void SetCellButtonsInteractable(Button newUninteractableButton)
+    private void SetCellButtonsInteractable(Button newUninteractableButton, bool disableAll = false)
     {
-        pulserButton.interactable = true;
-        magnetButton.interactable = true;
-        nodeButton.interactable = true;
-        eraserButton.interactable = true;
+        pulserButton.interactable = !disableAll;
+        magnetButton.interactable = !disableAll;
+        nodeButton.interactable = !disableAll;
+        eraserButton.interactable = !disableAll;
 
         if (newUninteractableButton != null)
-        {
             newUninteractableButton.interactable = false;
-            currentCellButton = newUninteractableButton;
-        }
+
+        //even if null
+        currentCellButton = newUninteractableButton;
+    }
+
+    private void UpdateTickMultiplier(float newMultiplier)
+    {
+        //set text. Remove 0 from 0.25 and 0.5
+        tickSpeedMultiplierText.text = newMultiplier.ToString().TrimStart('0') + "x";
+
+        //reset current multiplier
+        currentTickSpeedMultiplier = newMultiplier;
+
+        //change tick speed
+        cycleManager.ChangeTickSpeed(newMultiplier);
     }
 
     public void Exit()
@@ -232,17 +238,7 @@ public class HUD : MonoBehaviour
 
         isPlaying = !isPlaying;
 
-        if (isPlaying)
-        {
-            pulserButton.interactable = false;
-            magnetButton.interactable = false;
-            nodeButton.interactable = false;
-            eraserButton.interactable = false;
-        }
-        else
-        {
-            SetCellButtonsInteractable(currentCellButton);
-        }
+        SetCellButtonsInteractable(currentCellButton, isPlaying);
 
         playIcon.SetActive(!isPlaying);
         stopIcon.SetActive(isPlaying);
@@ -266,6 +262,8 @@ public class HUD : MonoBehaviour
         currentCellType = CellType.pulser;
         SetCellButtonsInteractable(pulserButton);
         currentGridPosition = default;
+
+        ToggleEraser(true);
     }
 
     public void SelectMagnet()
@@ -273,6 +271,8 @@ public class HUD : MonoBehaviour
         currentCellType = CellType.magnet;
         SetCellButtonsInteractable(magnetButton);
         currentGridPosition = default;
+
+        ToggleEraser(true);
     }
 
     public void SelectNode()
@@ -280,13 +280,24 @@ public class HUD : MonoBehaviour
         currentCellType = CellType.node;
         SetCellButtonsInteractable(nodeButton);
         currentGridPosition = default;
+
+        ToggleEraser(true);
     }
 
-    public void SelectEraser()
+    public void SelectEraserTrash()
     {
         currentCellType = CellType.eraser;
-        SetCellButtonsInteractable(eraserButton);
+        //turn on all buttons
+        SetCellButtonsInteractable(null);
         currentGridPosition = default;
+
+        ToggleEraser(false);
+    }
+
+    private void ToggleEraser(bool eraserOn)
+    {
+        eraserIcon.SetActive(eraserOn);
+        clearIcon.SetActive(!eraserOn);
     }
 
     public void NodeColor(Color32 newNodeColor)

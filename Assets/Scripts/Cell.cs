@@ -8,12 +8,16 @@ public class Cell : MonoBehaviour
     //STATIC:
     public static Dictionary<Vector2Int, Cell> gridIndex = new();
 
+        //key = Stopmode position between fastened cells, value = fastener
+        //used during Stopmode
+    public static Dictionary<Vector2Int, GameObject> fastenerIndex = new();
+
         //key = a cell with fastenings, value = list of cells the key cell is fastened to
+        //used during Playmode
     public static Dictionary<Cell, List<Cell>> fastenedCells = new();
 
     //PREFAB REFERENCE:
-    [SerializeField] private GameObject fastener;
-        //accesssed by HUD
+    [SerializeField] private GameObject fastenerPref;
     public SpriteRenderer sr;
 
     //CONSTANT:
@@ -26,22 +30,10 @@ public class Cell : MonoBehaviour
     [NonSerialized] public Vector2Int preparedMovePosition;
         //true when this cell is preparing to move into more than one position
     [NonSerialized] public bool tearFail;
-
+        //set by HUD when Cell is spawned
     [NonSerialized] public Vector2Int currentPosition;
 
-    protected void Awake() //before GameManager's Awake (temporary method!)
-    {
-        currentPosition = Vector2Int.RoundToInt(transform.position); //replace this later!
-    }
-
-    //called by GameManager at the start of the game
-    private void FillGridIndex()
-    {
-        gridIndex.Add(currentPosition, this);
-    }
-
-    //called by GameManager at the start of the game, after gridindex is filled
-    private void FastenCells()
+    public void FastenCell()
     {
         List<Cell> cellsToFasten = new();
         foreach (Vector2Int direction in directions)
@@ -49,46 +41,84 @@ public class Cell : MonoBehaviour
             //check if there's an adjacent cell in this direction
             if (!gridIndex.TryGetValue(currentPosition + direction * 2, out Cell adjacentCell)) continue;
 
-            if (this is Gadget thisGadget)
-            {
-                //check if this cell is a gadget and it's facing this direction
-                if (thisGadget.gadgetDirection == direction) continue;
-
-                //if this cell is a gadget and adjacent cell is not, add it to this gadget's adjacentNodes
-                //so that this cell doesn't reverse when the simulation starts
-                else if (adjacentCell is not Gadget)
-                    thisGadget.adjacentNodes.Add(adjacentCell);
-            }
+            //check if this cell is a gadget and it's facing this direction
+            if (this is Gadget thisGadget && thisGadget.gadgetDirection == direction) continue;
 
             //check if the adjacent cell is a gadget facing this cell
             if (adjacentCell is Gadget adjacentGadget && adjacentGadget.gadgetDirection * 2 == currentPosition - adjacentCell.currentPosition) continue;
 
-            //if adjacent cell isn't in static dictionary (meaning it's already created its fastenings), create fastener sprite
-            if (!fastenedCells.ContainsKey(adjacentCell))
-            {
-                GameObject fastenerObject = Instantiate(fastener, transform);
+            //spawn fastener sprite
+            GameObject fastenerObject = Instantiate(fastenerPref, transform);
 
                 //fastener position = current position + direction * .5 * grid scale, which is 2 so it cancels out
-                fastenerObject.transform.position = (Vector2)currentPosition + (Vector2)direction;
+            Vector2Int fastenerPosition = currentPosition + direction;
+            fastenerObject.transform.position = (Vector2)fastenerPosition;
 
                 //if this is a horizontal gadget, rotate fastener if direction is horizontal
-                if (this is Gadget horizontalGadget && horizontalGadget.gadgetDirection.y == 0)
-                {
-                    if (direction.y == 0)
-                        fastenerObject.transform.rotation *= Quaternion.Euler(0, 0, 90);
-                }
-                //else, rotate fastener if direction is vertical
-                else if (direction.x == 0)
+            if (this is Gadget horizontalGadget && horizontalGadget.gadgetDirection.y == 0)
+            {
+                if (direction.y == 0)
                     fastenerObject.transform.rotation *= Quaternion.Euler(0, 0, 90);
             }
+                //else, rotate fastener if direction is vertical
+            else if (direction.x == 0)
+                fastenerObject.transform.rotation *= Quaternion.Euler(0, 0, 90);
+
+            //add fastener to static dictionary so it can be destroyed when either cell is erased
+            if (fastenerIndex.ContainsKey(fastenerPosition))
+            {
+                Debug.LogError("Fastener already in FastenerIndex");
+                return;
+            }
+            fastenerIndex.Add(fastenerPosition, fastenerObject);
+
+            //add this cell to adjacentCell's fastenedCells entry, or create a new one if it doesn't exist
+            if (!fastenedCells.ContainsKey(adjacentCell))
+                fastenedCells.Add(adjacentCell, new List<Cell> { this });
+            else
+                fastenedCells[adjacentCell].Add(this);
 
             //cache adjacent cell
             cellsToFasten.Add(adjacentCell);
         }
 
-        //if this cell has fastenings, save to static dictionary
+        //if this cell is fastened to any cells, save them to its fastenedCells entry
         if (cellsToFasten.Count > 0)
             fastenedCells.Add(this, cellsToFasten);
+    }
+
+    public void UnFastenCell()
+    {
+        //check if this cell is fastened to any other cells
+        if (!fastenedCells.ContainsKey(this)) return;
+        
+        foreach (Cell adjacentCell in fastenedCells[this])
+        {
+            //remove this cell from adjacent cell's fastenedCells entry
+            if (!fastenedCells.TryGetValue(adjacentCell, out List<Cell> cellsFastenedToAdjacentCell))
+            {
+                Debug.LogError("Adjacent fastened cell not in this cell's FastenedCells entry");
+                return;
+            }
+
+            if (!cellsFastenedToAdjacentCell.Contains(this))
+            {
+                Debug.LogError("This cell not found in adjacent fastened cell's FastenedCells entry");
+                return;
+            }
+
+            cellsFastenedToAdjacentCell.Remove(this);
+
+            //destroy fastener
+            Vector2Int fastenerPosition = new((currentPosition.x + adjacentCell.currentPosition.x) / 2, (currentPosition.y + adjacentCell.currentPosition.y) / 2);
+            if (!fastenerIndex.TryGetValue(fastenerPosition, out GameObject fastener))
+            {
+                Debug.LogError("Fastener not found in FastenerIndex");
+                return;
+            }
+            fastenerIndex.Remove(fastenerPosition);
+            Destroy(fastener);
+        }
     }
 
     public void GetMovingCell(Gadget movingGadget, Vector2Int moveDirection)

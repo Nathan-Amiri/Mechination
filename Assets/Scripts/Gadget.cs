@@ -17,7 +17,7 @@ public class Gadget : Cell
     [NonSerialized] public readonly List<Cell> movingCells = new();
 
     //DYNAMIC:
-        //read by HUD. If false, is magnet
+        //if false, is magnet
     public bool isPulser;
 
     [NonSerialized] public Vector2Int gadgetDirection;
@@ -27,39 +27,44 @@ public class Gadget : Cell
     protected void OnEnable()
     {
         CycleManager.ReversePrepareGadgets += ReverseGadget;
+        CycleManager.OnPlay += OnPlay;
     }
 
     protected void OnDisable()
     {
         CycleManager.ReversePrepareGadgets -= ReverseGadget;
+        CycleManager.OnPlay -= OnPlay;
     }
 
-    protected new void Awake()
+    private List<Cell> GetAdjacentNodes()
     {
-        base.Awake();
-
-        gadgetDirection = Vector2Int.RoundToInt(transform.up); //replace this later!
-    }
-
-    private void ReverseGadget()
-    {
-        //compare current adjacent nodes and previous ones
-        List<Cell> currentAdjacentCells = new();
+        List<Cell> currentAdjacentNodes = new();
         foreach (Vector2Int direction in directions)
         {
-            //don't reverse if node is in front of gadget
+            //only check for nodes behind and to the side, not in front
             if (direction == gadgetDirection) continue;
 
             //continue if there's no cell in this direction or if it's not a node
             if (!gridIndex.TryGetValue(currentPosition + direction * 2, out Cell adjacentCell)) continue;
             if (adjacentCell is Gadget) continue;
 
-            currentAdjacentCells.Add(adjacentCell);
+            currentAdjacentNodes.Add(adjacentCell);
         }
+        return currentAdjacentNodes;
+    }
+
+    public void OnPlay()
+    {
+        adjacentNodes = GetAdjacentNodes();
+    }
+
+    private void ReverseGadget()
+    {
+        List<Cell> currentAdjacentNodes = GetAdjacentNodes();
 
         //if any nodes are adjacent that weren't last tick, reverse
-        foreach (Cell cell in currentAdjacentCells)
-            if (!adjacentNodes.Contains(cell))
+        foreach (Cell node in currentAdjacentNodes)
+            if (!adjacentNodes.Contains(node))
             {
                 isPulser = !isPulser;
                 cellSr.color = isPulser ? pulserColor : magnetColor;
@@ -68,7 +73,7 @@ public class Gadget : Cell
                 break;
             }
 
-        adjacentNodes = currentAdjacentCells;
+        adjacentNodes = currentAdjacentNodes;
 
         //prepare gadget
         if (isPulser)

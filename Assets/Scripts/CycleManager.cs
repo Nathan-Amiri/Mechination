@@ -6,6 +6,9 @@ using UnityEngine;
 public class CycleManager : MonoBehaviour
 {
     //STATIC:
+    public delegate void OnPlayAction();
+    public static OnPlayAction OnPlay;
+
     public delegate void ReversePrepareGadgetsAction();
     public static ReversePrepareGadgetsAction ReversePrepareGadgets;
 
@@ -22,22 +25,22 @@ public class CycleManager : MonoBehaviour
     private readonly float defaultTickSpeed = .5f;
 
     //DYNAMIC:
-        //accessed by HUD
     [NonSerialized] public float tickSpeedMultipler;
 
     private Coroutine cycleRoutine;
 
-    private IEnumerator StartCycle()
+    private IEnumerator Cycle()
     {
+        OnPlay?.Invoke();
+
         while (true)
         {
-            Cycle();
+            CycleTick();
             yield return new WaitForSeconds(TickSpeed);
         }
     }
 
-    //run once per 'gamemanager tick'
-    private void Cycle()
+    private void CycleTick()
     {
         //step 1: reverse, then prepare gadgets
         ReversePrepareGadgets?.Invoke();
@@ -57,14 +60,15 @@ public class CycleManager : MonoBehaviour
     //called by HUD
     public void ChangeTickSpeed(float newTickSpeedMultipler)
     {
-        TickSpeed = defaultTickSpeed * newTickSpeedMultipler;
+       //change tick speed using reciprocal
+       TickSpeed = defaultTickSpeed * (1 / newTickSpeedMultipler);
     }
 
     //called by HUD
     public void StartStopCycle(bool start)
     {
         if (start)
-            cycleRoutine = StartCoroutine(StartCycle());
+            cycleRoutine = StartCoroutine(Cycle());
         else
             StopCoroutine(cycleRoutine);
     }

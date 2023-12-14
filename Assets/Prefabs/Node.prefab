@@ -98,7 +98,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7f77a562eb5ee947a719a32710918cf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fastener: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
+  fastenerPref: {fileID: 5309498379296876749, guid: 602e36bd682b0b64481f2167a2e249db, type: 3}
   sr: {fileID: 9174507162531141949}
 --- !u!1 &5710119777882478467
 GameObject:
