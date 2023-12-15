@@ -16,7 +16,7 @@ public class SaveAndLoad : MonoBehaviour
         saveFile = Application.persistentDataPath + "/gamedata.json";
     }
 
-    public void LoadLayout()
+    public void LoadLayout(int newLayoutNumber)
     {
         if (!File.Exists(saveFile)) return;
 
@@ -25,8 +25,8 @@ public class SaveAndLoad : MonoBehaviour
         //get layoutData from file
         string fileContents = File.ReadAllText(saveFile);
         layoutData = JsonUtility.FromJson<LayoutData>(fileContents);
-            
-        foreach (CellData cellData in layoutData.cellsInLayout)
+
+        foreach (CellData cellData in layoutData.layouts[newLayoutNumber])
         {
             Quaternion cellRotation = Quaternion.Euler(0, 0, cellData.cellRotation);
 
@@ -34,10 +34,10 @@ public class SaveAndLoad : MonoBehaviour
         }
     }
 
-    public void SaveLayout()
+    public void SaveLayout(int currentLayoutNumber)
     {
         //update layoutData
-        layoutData.cellsInLayout.Clear();
+        layoutData.layouts[currentLayoutNumber].Clear();
 
         foreach (KeyValuePair<Vector2Int, Cell> gridIndexEntry in Cell.gridIndex)
         {
@@ -50,7 +50,7 @@ public class SaveAndLoad : MonoBehaviour
                 cellPosition = gridIndexEntry.Key
             };
 
-            layoutData.cellsInLayout.Add(cellData);
+            layoutData.layouts[currentLayoutNumber].Add(cellData);
         }
 
         //save layoutData to file
@@ -62,7 +62,14 @@ public class SaveAndLoad : MonoBehaviour
 [System.Serializable]
 public class LayoutData
 {
-    public List<CellData> cellsInLayout = new();
+    public List<List<CellData>> layouts = new()
+    {
+        new List<CellData>(), //layout0
+        new List<CellData>(), //layout1
+        new List<CellData>(), //layout2
+        new List<CellData>(), //layout3
+        new List<CellData>() //layout4
+    };
 }
 
 [System.Serializable]

@@ -91,7 +91,7 @@ public class HUD : MonoBehaviour
 
 
         //load layout
-        saveAndLoad.LoadLayout();
+        saveAndLoad.LoadLayout(0);
     }
 
     private void Update()
@@ -263,7 +263,7 @@ public class HUD : MonoBehaviour
 
     public void SelectSave()
     {
-        saveAndLoad.SaveLayout();
+        saveAndLoad.SaveLayout(0);
         UpdateLayoutSaved(true);
     }
     private void UpdateLayoutSaved(bool saved)
@@ -287,7 +287,7 @@ public class HUD : MonoBehaviour
         {
             cycleManager.StartStopCycle(false);
 
-            saveAndLoad.LoadLayout();
+            saveAndLoad.LoadLayout(0);
         }
 
         //adjust interactable
