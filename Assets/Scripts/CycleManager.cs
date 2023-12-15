@@ -58,7 +58,7 @@ public class CycleManager : MonoBehaviour
     }
 
     //called by HUD
-    public void ChangeTickSpeed(float newTickSpeedMultipler)
+    public void SetTickSpeed(float newTickSpeedMultipler)
     {
        //change tick speed using reciprocal
        TickSpeed = defaultTickSpeed * (1 / newTickSpeedMultipler);
