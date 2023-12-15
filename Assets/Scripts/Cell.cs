@@ -98,6 +98,9 @@ public class Cell : MonoBehaviour
         
         foreach (Cell adjacentCell in fastenedCells[this])
         {
+            //remove this cell's fastenedCells entry
+            fastenedCells.Remove(this);
+
             //remove this cell from adjacent cell's fastenedCells entry
             if (!fastenedCells.TryGetValue(adjacentCell, out List<Cell> cellsFastenedToAdjacentCell))
             {

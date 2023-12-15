@@ -159,34 +159,18 @@ public class HUD : MonoBehaviour
         //get grid position
         Vector2Int gridPosition = MouseGridPosition();
 
-        //if cell exists and spawntype isn't eraser, return if cell is identical to cell that would be spawned
-        bool cellExistsAtPosition = Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition);
-
-        if (cellExistsAtPosition && currentSpawnType != SpawnType.eraser)
+        //if cell exists, return if we aren't erasing and the cell is identical to the cell that would be spawned
+        //else, erase existing cell
+        if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
         {
-            //check if cell is node and color is identical
-            if (currentSpawnType == SpawnType.node && cellAtPosition.nodeColorNumber == currentNodeColorNumber) return;
+            if (currentSpawnType != SpawnType.eraser && CellAlreadySpawned(cellAtPosition)) return;
 
-            //check if cell is gadget and gadget type is identical
-            if (cellAtPosition is Gadget gadget && gadget.isPulser == (currentSpawnType == SpawnType.pulser))
-            {
-                //check if rotation is identical
-                int currentGadgetRotation = gadget.isPulser ? pulserZRotation : magnetZRotation;
-                if (gadget.GetRotation() == currentGadgetRotation) return;
-            }
-        }
-
-        //erase cell if it exists
-        if (cellExistsAtPosition)
-        {
             cellAtPosition.UnFastenCell();
             Destroy(cellAtPosition.gameObject);
             Cell.gridIndex.Remove(gridPosition);
         }
 
-
-        //if eraser, return
-        if (prefToSpawn == null) return;
+        if (currentSpawnType == SpawnType.eraser) return;
 
         //spawn new cell
         Cell newCell = Instantiate(prefToSpawn, (Vector2)gridPosition, spawnRotation, cellParent);
@@ -205,6 +189,24 @@ public class HUD : MonoBehaviour
 
         //fasten cell
         newCell.FastenCell();
+    }
+
+    private bool CellAlreadySpawned(Cell cell)
+    {
+        //returns true if the cell is identical to the cell that would be spawned
+
+        if (cell is Gadget gadget)
+        {
+            if (currentSpawnType == SpawnType.node)
+                return false;
+
+            return gadget.isPulser == (currentSpawnType == SpawnType.pulser);
+        }
+
+        if (currentSpawnType != SpawnType.node)
+            return false;
+
+        return cell.nodeColorNumber == currentNodeColorNumber;
     }
 
     private Vector2Int MouseGridPosition()
