@@ -3951,6 +3951,12 @@ MonoBehaviour:
   clearIcon: {fileID: 26172109}
   tickSpeedMultiplierText: {fileID: 1850113763}
   saveButton: {fileID: 1290923626}
+  saveFileButtons:
+  - {fileID: 1015882331}
+  - {fileID: 248251633}
+  - {fileID: 160015729}
+  - {fileID: 401043907}
+  - {fileID: 922143222}
   pulserButton: {fileID: 1731454711}
   magnetButton: {fileID: 489868768}
   nodeButton: {fileID: 513175421}
@@ -6050,7 +6056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 858961387}
   m_Layer: 5
-  m_Name: Saves
+  m_Name: SaveFileButtons
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

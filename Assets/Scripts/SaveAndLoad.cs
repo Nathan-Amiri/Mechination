@@ -26,7 +26,7 @@ public class SaveAndLoad : MonoBehaviour
         string fileContents = File.ReadAllText(saveFile);
         layoutData = JsonUtility.FromJson<LayoutData>(fileContents);
 
-        foreach (CellData cellData in layoutData.layouts[newLayoutNumber])
+        foreach (CellData cellData in layoutData.layouts[newLayoutNumber].layout)
         {
             Quaternion cellRotation = Quaternion.Euler(0, 0, cellData.cellRotation);
 
@@ -37,7 +37,7 @@ public class SaveAndLoad : MonoBehaviour
     public void SaveLayout(int currentLayoutNumber)
     {
         //update layoutData
-        layoutData.layouts[currentLayoutNumber].Clear();
+        layoutData.layouts[currentLayoutNumber].layout.Clear();
 
         foreach (KeyValuePair<Vector2Int, Cell> gridIndexEntry in Cell.gridIndex)
         {
@@ -50,7 +50,7 @@ public class SaveAndLoad : MonoBehaviour
                 cellPosition = gridIndexEntry.Key
             };
 
-            layoutData.layouts[currentLayoutNumber].Add(cellData);
+            layoutData.layouts[currentLayoutNumber].layout.Add(cellData);
         }
 
         //save layoutData to file
@@ -62,14 +62,21 @@ public class SaveAndLoad : MonoBehaviour
 [System.Serializable]
 public class LayoutData
 {
-    public List<List<CellData>> layouts = new()
+    //jsonutility doesn't support lists of lists, needs wrapper class to hold each list
+    public List<LayoutWrapper> layouts = new()
     {
-        new List<CellData>(), //layout0
-        new List<CellData>(), //layout1
-        new List<CellData>(), //layout2
-        new List<CellData>(), //layout3
-        new List<CellData>() //layout4
+        new LayoutWrapper(),
+        new LayoutWrapper(),
+        new LayoutWrapper(),
+        new LayoutWrapper(),
+        new LayoutWrapper()
     };
+}
+
+[System.Serializable]
+public class LayoutWrapper
+{
+    public List<CellData> layout = new();
 }
 
 [System.Serializable]

@@ -46,6 +46,8 @@ public class HUD : MonoBehaviour
 
     [SerializeField] private Button saveButton;
 
+    [SerializeField] private List<Button> saveFileButtons;
+
     [SerializeField] private Button pulserButton;
     [SerializeField] private Button magnetButton;
     [SerializeField] private Button nodeButton;
@@ -61,19 +63,21 @@ public class HUD : MonoBehaviour
     public enum SpawnType { pulser, magnet, node, eraser }
     private SpawnType currentSpawnType;
 
+    private int pulserZRotation;
+    private int magnetZRotation;
+
     private Button currentCellButton;
+
+    private bool isPlaying;
 
     private readonly List<float> tickSpeedMultipliers = new() { .25f, .5f, 1, 2, 4 };
     private float currentTickSpeedMultiplier = 1;
 
-    private bool isPlaying;
+    private bool layoutSaved = true;
 
-    private int pulserZRotation;
-    private int magnetZRotation;
+    private int currentLayoutNumber;
 
     private int currentNodeColorNumber;
-
-    private bool layoutSaved = true;
 
     private bool currentlyErasing;
 
@@ -87,11 +91,10 @@ public class HUD : MonoBehaviour
         else
             cycleManager.SetTickSpeed(1);
 
-        //get the layout number from playerprefs
-
-
-        //load layout
-        saveAndLoad.LoadLayout(0);
+        if (PlayerPrefs.HasKey("currentLayoutNumber"))
+            SelectLoadSaveFile(PlayerPrefs.GetInt("currentLayoutNumber"));
+        else
+            SelectLoadSaveFile(0);
     }
 
     private void Update()
@@ -174,6 +177,8 @@ public class HUD : MonoBehaviour
             if (currentSpawnType != SpawnType.eraser && CellAlreadySpawned(cellAtPosition)) return;
 
             DespawnCell(cellAtPosition, gridPosition, true);
+            //after erasing, layout has changed
+            UpdateLayoutSaved(false);
         }
 
         if (currentSpawnType == SpawnType.eraser) return;
@@ -238,9 +243,6 @@ public class HUD : MonoBehaviour
 
         Destroy(cell.gameObject);
         Cell.gridIndex.Remove(cellPosition);
-
-        //after erasing, layout has changed
-        UpdateLayoutSaved(false);
     }
 
     private Vector2Int MouseGridPosition()
@@ -263,7 +265,7 @@ public class HUD : MonoBehaviour
 
     public void SelectSave()
     {
-        saveAndLoad.SaveLayout(0);
+        saveAndLoad.SaveLayout(currentLayoutNumber);
         UpdateLayoutSaved(true);
     }
     private void UpdateLayoutSaved(bool saved)
@@ -275,7 +277,14 @@ public class HUD : MonoBehaviour
 
     public void SelectLoadSaveFile(int saveFile)
     {
+        currentLayoutNumber = saveFile;
 
+        saveAndLoad.LoadLayout(currentLayoutNumber);
+
+        PlayerPrefs.SetInt("currentLayoutNumber", currentLayoutNumber);
+
+        for (int i = 0; i < saveFileButtons.Count; i++)
+            saveFileButtons[i].interactable = i != currentLayoutNumber;
     }
 
     public void SelectPlayStop()
@@ -287,7 +296,7 @@ public class HUD : MonoBehaviour
         {
             cycleManager.StartStopCycle(false);
 
-            saveAndLoad.LoadLayout(0);
+            saveAndLoad.LoadLayout(currentLayoutNumber);
         }
 
         //adjust interactable
@@ -381,6 +390,9 @@ public class HUD : MonoBehaviour
         else
         {
             ClearGrid();
+
+            //after clearing, layout has changed
+            UpdateLayoutSaved(false);
 
             //continue erasing
             currentlyErasing = true;
