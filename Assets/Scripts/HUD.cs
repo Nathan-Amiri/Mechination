@@ -59,6 +59,8 @@ public class HUD : MonoBehaviour
     [SerializeField] private Image nodeImage;
     [SerializeField] private List<Color32> nodeColors;
 
+    [SerializeField] private List<Button> nodeColorButtons;
+
     //DYNAMIC
     public enum SpawnType { pulser, magnet, node, eraser }
     private SpawnType currentSpawnType;
@@ -428,6 +430,11 @@ public class HUD : MonoBehaviour
     {
         nodeImage.color = nodeColors[colorNumber];
         currentNodeColorNumber = colorNumber;
+
+        for (int i = 0; i < nodeColorButtons.Count; i++)
+            nodeColorButtons[i].interactable = i != currentNodeColorNumber;
+
+        SelectNode();
     }
 
     public void SelectTutorial()

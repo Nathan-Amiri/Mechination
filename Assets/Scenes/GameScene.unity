@@ -3977,6 +3977,13 @@ MonoBehaviour:
     rgba: 4278220799
   - serializedVersion: 2
     rgba: 4279506103
+  nodeColorButtons:
+  - {fileID: 2091069402}
+  - {fileID: 766568777}
+  - {fileID: 1262011619}
+  - {fileID: 2094903885}
+  - {fileID: 1391566444}
+  - {fileID: 1197933196}
 --- !u!1001 &531133960
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14105,7 +14112,7 @@ MonoBehaviour:
     m_PressedTrigger: Pressed
     m_SelectedTrigger: Selected
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 2091069400}
   m_OnClick:
     m_PersistentCalls:
