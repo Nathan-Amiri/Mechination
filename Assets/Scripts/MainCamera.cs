@@ -7,14 +7,14 @@ public class MainCamera : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
 
-    //zoom
+    // Zoom
     private readonly float zoomSensitivity = 20;
     private readonly float minZoom = 50;
     private readonly float maxZoom = 180;
 
     private float currentZoomAmount;
 
-    //pan
+    // Pan
     private readonly float panSensitivity = .02f;
 
     private Vector3 initialCameraPosition;
@@ -35,8 +35,8 @@ public class MainCamera : MonoBehaviour
         fieldOfView = Mathf.Clamp(fieldOfView, minZoom, maxZoom);
         mainCamera.fieldOfView = fieldOfView;
 
-        //115 is the middle zoom amount
-        //current zoom amount ranges from -.5 to 1.5
+        // 115 is the middle zoom amount
+        // CurrentZoomAmount ranges from -.5 to 1.5
         currentZoomAmount = (fieldOfView / 115) - 1;
     }
 
@@ -52,7 +52,7 @@ public class MainCamera : MonoBehaviour
         if (isPanning)
         {
             Vector3 mouseDelta = initialMousePosition - Input.mousePosition;
-            //increase pan speed exponentially based on zoom amount, with a growth rate of 50
+            // Increase pan speed exponentially based on zoom amount, with a growth rate of 50
             Vector3 cameraDelta = panSensitivity * Mathf.Pow(50, currentZoomAmount) * mouseDelta;
 
             Vector3 targetCameraPosition = initialCameraPosition + cameraDelta;

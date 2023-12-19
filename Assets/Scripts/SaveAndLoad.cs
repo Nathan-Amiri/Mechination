@@ -22,7 +22,7 @@ public class SaveAndLoad : MonoBehaviour
 
         hud.ClearGrid();
 
-        //get layoutData from file
+        // Get layoutData from file
         string fileContents = File.ReadAllText(saveFile);
         layoutData = JsonUtility.FromJson<LayoutData>(fileContents);
 
@@ -36,7 +36,7 @@ public class SaveAndLoad : MonoBehaviour
 
     public void SaveLayout(int currentLayoutNumber)
     {
-        //update layoutData
+        // Update layoutData
         layoutData.layouts[currentLayoutNumber].layout.Clear();
 
         foreach (KeyValuePair<Vector2Int, Cell> gridIndexEntry in Cell.gridIndex)
@@ -53,7 +53,7 @@ public class SaveAndLoad : MonoBehaviour
             layoutData.layouts[currentLayoutNumber].layout.Add(cellData);
         }
 
-        //save layoutData to file
+        // Save layoutData to file
         string jsonString = JsonUtility.ToJson(layoutData, true);
         File.WriteAllText(saveFile, jsonString);
     }
@@ -62,7 +62,7 @@ public class SaveAndLoad : MonoBehaviour
 [System.Serializable]
 public class LayoutData
 {
-    //jsonutility doesn't support lists of lists, needs wrapper class to hold each list
+    // JsonUtility doesn't support lists of lists, needs wrapper class to hold each list
     public List<LayoutWrapper> layouts = new()
     {
         new LayoutWrapper(),
@@ -82,7 +82,7 @@ public class LayoutWrapper
 [System.Serializable]
 public struct CellData
 {
-    public int cellType; //0 = node, 1 = pulser, 2 = magnet
+    public int cellType; // 0 = node, 1 = pulser, 2 = magnet
     public int nodeColorNumber;
     public int cellRotation;
     public Vector2Int cellPosition;

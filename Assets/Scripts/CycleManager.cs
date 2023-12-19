@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CycleManager : MonoBehaviour
 {
-    //STATIC:
+    // STATIC:
     public delegate void OnPlayAction();
     public static OnPlayAction OnPlay;
 
@@ -16,15 +16,15 @@ public class CycleManager : MonoBehaviour
 
     public static List<Gadget> preparedGadgets = new();
 
-        //positionSafety entry is set for each position a cell prepares to move into. If
-        //another cell attempts to move into a position another cell has claimed, position
-        //is declared unsafe
+        // PositionSafety entry is set for each position a cell prepares to move into. If
+        // another cell attempts to move into a position another cell has claimed, position
+        // is declared unsafe
     public static Dictionary<Vector2Int, PositionSafetyInfo> positionSafety = new();
 
-    //CONSTANT:
+    // CONSTANT:
     private readonly float defaultTickSpeed = .5f;
 
-    //DYNAMIC:
+    // DYNAMIC:
     [NonSerialized] public float tickSpeedMultipler;
 
     private Coroutine cycleRoutine;
@@ -42,14 +42,14 @@ public class CycleManager : MonoBehaviour
 
     private void CycleTick()
     {
-        //step 1: reverse, then prepare gadgets
+        // Step 1: reverse, then prepare gadgets
         ReversePrepareGadgets?.Invoke();
 
-        //step 2: gadgets check fail conditions, then activate
+        // Step 2: gadgets check fail conditions, then activate
         foreach (Gadget preparedGadget in preparedGadgets)
             preparedGadget.ActivateGadget();
 
-        //step 3: reset for next cycle (all gadgets must check fails/activate before any reset)
+        // Step 3: reset for next cycle (all gadgets must check fails/activate before any reset)
         foreach (Gadget preparedGadget in preparedGadgets)
             preparedGadget.ResetAfterCycle();
 
@@ -57,14 +57,14 @@ public class CycleManager : MonoBehaviour
         positionSafety.Clear();
     }
 
-    //called by HUD
+    // Called by HUD
     public void SetTickSpeed(float newTickSpeedMultipler)
     {
-       //change tick speed using reciprocal
+       // Change tick speed using reciprocal
        TickSpeed = defaultTickSpeed * (1 / newTickSpeedMultipler);
     }
 
-    //called by HUD
+    // Called by HUD
     public void StartStopCycle(bool start)
     {
         if (start)

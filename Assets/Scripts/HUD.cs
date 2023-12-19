@@ -7,24 +7,7 @@ using UnityEngine.UI;
 
 public class HUD : MonoBehaviour
 {
-    /*
-    todo:
-
-    check/x marks from iconfinder for save icon once wifi is on again
-
-    saves (save current loadout in playerprefs, load on start)
-
-    play saves before playing
-    stop reloads save
-
-    clear
-    clear/save/exit popups
-
-    tutorial (start game first time with how to play, save in playerprefs to not do again)
-    */
-
-
-    //SCENE REFERENCE
+    // SCENE REFERENCE
     [SerializeField] private Cell pulserPref;
     [SerializeField] private Cell magnetPref;
     [SerializeField] private Cell nodePref;
@@ -61,7 +44,7 @@ public class HUD : MonoBehaviour
 
     [SerializeField] private List<Button> nodeColorButtons;
 
-    //DYNAMIC
+    // DYNAMIC
     public enum SpawnType { pulser, magnet, node, eraser }
     private SpawnType currentSpawnType;
 
@@ -86,7 +69,7 @@ public class HUD : MonoBehaviour
 
     private void Start()
     {
-        SelectEraserTrash();
+        SelectEraserClear();
 
         if (PlayerPrefs.HasKey("tickSpeedMultiplier"))
             UpdateTickMultiplier(PlayerPrefs.GetFloat("tickSpeedMultiplier"));
@@ -101,12 +84,28 @@ public class HUD : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+            SelectExit();
+        if (Input.GetKeyDown(KeyCode.Space))
+            SelectPlayStop();
+
         if (isPlaying) return;
 
-        //check if mouse is over ui
+        if (Input.GetKeyDown(KeyCode.S) && saveButton.interactable)
+            SelectSave();
+        if (Input.GetKeyDown(KeyCode.Q) && pulserButton.interactable)
+            SelectPulser();
+        if (Input.GetKeyDown(KeyCode.W) && magnetButton.interactable)
+            SelectMagnet();
+        if (Input.GetKeyDown(KeyCode.E) && nodeButton.interactable)
+            SelectNode();
+        if (Input.GetKeyDown(KeyCode.R) && eraserButton.interactable)
+            SelectEraserClear();
+
+        // Check if mouse is over UI
         if (EventSystem.current.IsPointerOverGameObject()) return;
 
-        //rotate before spawning so that the spawned cell will be of the correct rotation
+        // Rotate before spawning so that the spawned cell will be of the correct rotation
         if (Input.GetMouseButtonDown(0))
             RotateGadget();
 
@@ -116,20 +115,20 @@ public class HUD : MonoBehaviour
 
     private void RotateGadget()
     {
-        //check if a gadget is selected
+        // Check if a gadget is selected
         if (currentSpawnType == SpawnType.node || currentSpawnType == SpawnType.eraser) return;
 
-        //check if cell exists at mouse position
+        // Check if cell exists at mouse position
         Vector2Int gridPosition = MouseGridPosition();
         if (!Cell.gridIndex.TryGetValue(gridPosition, out Cell cell)) return;
 
-        //check if cell is a gadget
+        // Check if cell is a gadget
         if (cell is not Gadget gadget) return;
 
-        //check if the gadget is of the selected type
+        // Check if the gadget is of the selected type
         if (gadget.isPulser != (currentSpawnType == SpawnType.pulser)) return;
 
-        //rotate gadget, gadget button, and future spawned gadgets of the selected type
+        // Rotate gadget, gadget button, and future spawned gadgets of the selected type
         gadget.transform.rotation *= Quaternion.Euler(0, 0, -90);
         gadget.gadgetDirection = Vector2Int.RoundToInt(gadget.transform.up);
 
@@ -138,16 +137,16 @@ public class HUD : MonoBehaviour
             pulserZRotation = Mathf.RoundToInt(gadget.transform.rotation.eulerAngles.z);
             pulserButtonTR.rotation = gadget.transform.rotation;
         }
-        else //if magnet
+        else // If magnet
         {
             magnetZRotation = Mathf.RoundToInt(gadget.transform.rotation.eulerAngles.z);
             magnetButtonTR.rotation = gadget.transform.rotation;
         }
 
-        //after rotating, layout has changed
+        // After rotating, layout has changed
         UpdateLayoutSaved(false);
 
-        //unfasten and refasten gadget after rotating
+        // Unfasten and refasten gadget after rotating
         gadget.UnFastenCell();
         gadget.FastenCell();
     }
@@ -167,31 +166,31 @@ public class HUD : MonoBehaviour
             spawnRotation = Quaternion.Euler(0, 0, magnetZRotation);
             newCellType = 2;
         }
-        //for eraser and node, remain default
+        // For eraser and node, remain default
 
-        //get grid position
+        // Get grid position
         Vector2Int gridPosition = MouseGridPosition();
 
-        //if cell exists, return if we aren't erasing and the cell is identical to the cell that would be spawned
-        //else, erase existing cell
+        // If cell exists, return if we aren't erasing and the cell is identical to the cell that would be spawned
+        // Else, erase existing cell
         if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
         {
             if (currentSpawnType != SpawnType.eraser && CellAlreadySpawned(cellAtPosition)) return;
 
             DespawnCell(cellAtPosition, gridPosition, true);
-            //after erasing, layout has changed
+            // After erasing, layout has changed
             UpdateLayoutSaved(false);
         }
 
         if (currentSpawnType == SpawnType.eraser) return;
 
-        //spawn new cell
+        // Spawn new cell
         SpawnCell(newCellType, gridPosition, spawnRotation, currentNodeColorNumber);
-        //after spawning, layout has changed
+        // After spawning, layout has changed
         UpdateLayoutSaved(false);
     }
     
-    //called by PrepareToSpawnCell and SaveAndLoad's LoadLayout
+    // Called by PrepareToSpawnCell and SaveAndLoad's LoadLayout
     public void SpawnCell(int newCellType, Vector2Int gridPosition, Quaternion spawnRotation, int nodeColorNumber)
     {
         Cell prefToSpawn = nodePref;
@@ -201,25 +200,25 @@ public class HUD : MonoBehaviour
         Cell newCell = Instantiate(prefToSpawn, (Vector2)gridPosition, spawnRotation, cellParent);
         Cell.gridIndex.Add(gridPosition, newCell);
         newCell.currentPosition = gridPosition;
-        //used for layout saving
+        // Used for layout saving
         newCell.cellType = newCellType;
 
         if (newCell is Gadget newGadget)
-            //must set gadgetDirection before fastening
+            // Must set gadgetDirection before fastening
             newGadget.gadgetDirection = Vector2Int.RoundToInt(newGadget.transform.up);
-        else //if node
+        else // If node
         {
             newCell.sr.color = nodeColors[nodeColorNumber];
             newCell.nodeColorNumber = nodeColorNumber;
         }
 
-        //fasten cell
+        // Fasten cell
         newCell.FastenCell();
     }
 
     private bool CellAlreadySpawned(Cell cell)
     {
-        //returns true if the cell is identical to the cell that would be spawned
+        // Returns true if the cell is identical to the cell that would be spawned
 
         if (cell is Gadget gadget)
         {
@@ -237,9 +236,9 @@ public class HUD : MonoBehaviour
 
     private void DespawnCell(Cell cell, Vector2Int cellPosition, bool unfastenCell)
     {
-        //if clearing grid, cell can't be unfastened since fasteners are removed based on
-        //current position. Also, there's no need because they will be destroyed when their
-        //parented cells are despawned
+        // If clearing grid, cell can't be unfastened since fasteners are removed based on
+        // current position. Also, there's no need because they will be destroyed when their
+        // parented cells are despawned
         if (unfastenCell)
             cell.UnFastenCell();
 
@@ -293,7 +292,7 @@ public class HUD : MonoBehaviour
     {
         isPlaying = !isPlaying;
 
-        //if stopping, stop cycle, clear, load layout, then adjust interactable in that order
+        // If stopping, stop cycle, clear, load layout, then adjust interactable in that order
         if (!isPlaying)
         {
             cycleManager.StartStopCycle(false);
@@ -301,13 +300,18 @@ public class HUD : MonoBehaviour
             saveAndLoad.LoadLayout(currentLayoutNumber);
         }
 
-        //adjust interactable
-        SetButtonsInteractable(currentCellButton, isPlaying);
+        // Adjust interactable
+        SetCellButtonsInteractable(currentCellButton, isPlaying);
+
+        for (int i = 0; i < saveFileButtons.Count; i++)
+            saveFileButtons[i].interactable = !isPlaying && currentLayoutNumber != i;
+        for (int i = 0; i < nodeColorButtons.Count; i++)
+            nodeColorButtons[i].interactable = !isPlaying && currentNodeColorNumber != i;
 
         playIcon.SetActive(!isPlaying);
         stopIcon.SetActive(isPlaying);
 
-        //if playing, adjust interactable, save layout, then start cycle in that order
+        // If playing, adjust interactable, save layout, then start cycle in that order
         if (isPlaying)
         {
             SelectSave();
@@ -315,7 +319,7 @@ public class HUD : MonoBehaviour
             cycleManager.StartStopCycle(true);
         }
     }
-    private void SetButtonsInteractable(Button newUninteractableButton, bool disableAll = false)
+    private void SetCellButtonsInteractable(Button newUninteractableButton, bool disableAll = false)
     {
         pulserButton.interactable = !disableAll;
         magnetButton.interactable = !disableAll;
@@ -325,13 +329,13 @@ public class HUD : MonoBehaviour
         if (newUninteractableButton != null)
             newUninteractableButton.interactable = false;
 
-        //even if null
+        // Even if null
         currentCellButton = newUninteractableButton;
     }
 
     public void SelectTickMultipler()
     {
-        //if current multiplier isn't found in the first 4 multipliers, then it's 4, so it remains at .25f
+        // If current multiplier isn't found in the first 4 multipliers, then it's 4, so it remains at .25f
         float newMultiplier = .25f;
         for (int i = 0; i < tickSpeedMultipliers.Count - 1; i++)
             if (currentTickSpeedMultiplier == tickSpeedMultipliers[i])
@@ -343,20 +347,20 @@ public class HUD : MonoBehaviour
     }
     private void UpdateTickMultiplier(float newMultiplier)
     {
-        //set text. Remove 0 from 0.25 and 0.5
+        // Set text. Remove 0 from 0.25 and 0.5
         tickSpeedMultiplierText.text = newMultiplier.ToString().TrimStart('0') + "x";
 
-        //reset current multiplier
+        // Reset current multiplier
         currentTickSpeedMultiplier = newMultiplier;
 
-        //change tick speed
+        // Change tick speed
         cycleManager.SetTickSpeed(newMultiplier);
     }
 
     public void SelectPulser()
     {
         currentSpawnType = SpawnType.pulser;
-        SetButtonsInteractable(pulserButton);
+        SetCellButtonsInteractable(pulserButton);
 
         ToggleErasing(false);
     }
@@ -364,7 +368,7 @@ public class HUD : MonoBehaviour
     public void SelectMagnet()
     {
         currentSpawnType = SpawnType.magnet;
-        SetButtonsInteractable(magnetButton);
+        SetCellButtonsInteractable(magnetButton);
 
         ToggleErasing(false);
     }
@@ -372,20 +376,20 @@ public class HUD : MonoBehaviour
     public void SelectNode()
     {
         currentSpawnType = SpawnType.node;
-        SetButtonsInteractable(nodeButton);
+        SetCellButtonsInteractable(nodeButton);
 
         ToggleErasing(false);
     }
 
-    public void SelectEraserTrash()
+    public void SelectEraserClear()
     {
         currentlyErasing = !currentlyErasing;
 
         if (currentlyErasing)
         {
             currentSpawnType = SpawnType.eraser;
-            //turn on all buttons
-            SetButtonsInteractable(null);
+            // Turn on all buttons
+            SetCellButtonsInteractable(null);
 
             ToggleErasing(true);
         }
@@ -393,17 +397,17 @@ public class HUD : MonoBehaviour
         {
             ClearGrid();
 
-            //after clearing, layout has changed
+            // After clearing, layout has changed
             UpdateLayoutSaved(false);
 
-            //continue erasing
+            // Continue erasing
             currentlyErasing = true;
         }
     }
-    //called by SelectEraserTrash and SaveAndLoad's LoadLayout;
+    // Called by SelectEraserClear and SaveAndLoad's LoadLayout;
     public void ClearGrid()
     {
-        //must despawn outside foreach loop since despawning modifies the dict
+        // Must despawn outside foreach loop since despawning modifies the dict
         List<KeyValuePair<Vector2Int, Cell>> pairs = new();
         foreach (KeyValuePair<Vector2Int, Cell> pair in Cell.gridIndex)
             pairs.Add(pair);
@@ -411,8 +415,8 @@ public class HUD : MonoBehaviour
         foreach(KeyValuePair<Vector2Int, Cell> pair in pairs)
             DespawnCell(pair.Value, pair.Key, false);
 
-        //fasteners have already been destroyed due to cell despawning,
-        //but fastenedCells and fastenerIndex need to be reset
+        // Fasteners have already been destroyed due to cell despawning,
+        // but fastenedCells and fastenerIndex need to be reset
         Cell.fastenedCells.Clear();
         Cell.fastenerIndex.Clear();
     }
