@@ -18,7 +18,7 @@ public class HUD : MonoBehaviour
     [SerializeField] private Camera mainCamera;
 
     [SerializeField] private Transform cellParent;
-    
+
     [SerializeField] private GameObject playIcon;
     [SerializeField] private GameObject stopIcon;
 
@@ -44,6 +44,9 @@ public class HUD : MonoBehaviour
 
     [SerializeField] private List<Button> nodeColorButtons;
 
+    [SerializeField] private GameObject warning;
+    [SerializeField] private TMP_Text warningText;
+
     // DYNAMIC
     public enum SpawnType { pulser, magnet, node, eraser }
     private SpawnType currentSpawnType;
@@ -65,6 +68,12 @@ public class HUD : MonoBehaviour
     private int currentNodeColorNumber;
 
     private bool currentlyErasing;
+
+    public delegate void WarningDelegate();
+    private WarningDelegate warningDelegate;
+
+        // Cached when warning is being displayed after selecting a new layout before saving
+    private int newLayoutNumber;
 
 
     private void Start()
@@ -261,6 +270,17 @@ public class HUD : MonoBehaviour
 
     public void SelectExit()
     {
+        if (layoutSaved)
+            ConfirmExit();
+        else
+        {
+            ToggleWarningMessage(true);
+            warningDelegate = ConfirmExit;
+            warning.SetActive(true);
+        }
+    }
+    private void ConfirmExit()
+    {
         Application.Quit();
     }
 
@@ -278,7 +298,21 @@ public class HUD : MonoBehaviour
 
     public void SelectLoadSaveFile(int saveFile)
     {
-        currentLayoutNumber = saveFile;
+        // Don't set currentLayoutNumber until confirmed
+        newLayoutNumber = saveFile;
+
+        if (layoutSaved)
+            ConfirmLoadSaveFile();
+        else
+        {
+            ToggleWarningMessage(true);
+            warningDelegate = ConfirmLoadSaveFile;
+            warning.SetActive(true);
+        }
+    }
+    private void ConfirmLoadSaveFile()
+    {
+        currentLayoutNumber = newLayoutNumber;
 
         saveAndLoad.LoadLayout(currentLayoutNumber);
 
@@ -286,6 +320,8 @@ public class HUD : MonoBehaviour
 
         for (int i = 0; i < saveFileButtons.Count; i++)
             saveFileButtons[i].interactable = i != currentLayoutNumber;
+
+        UpdateLayoutSaved(true);
     }
 
     public void SelectPlayStop()
@@ -395,14 +431,22 @@ public class HUD : MonoBehaviour
         }
         else
         {
-            ClearGrid();
+            ToggleWarningMessage(false);
 
-            // After clearing, layout has changed
-            UpdateLayoutSaved(false);
+            warningDelegate = ClearConfirmed;
+            warning.SetActive(true);
 
-            // Continue erasing
+            // Continue erasing whether confirmed or not
             currentlyErasing = true;
         }
+    }
+    // Run after warning message confirmed the clear
+    private void ClearConfirmed()
+    {
+        ClearGrid();
+
+        // After clearing, layout has changed
+        UpdateLayoutSaved(false);
     }
     // Called by SelectEraserClear and SaveAndLoad's LoadLayout;
     public void ClearGrid()
@@ -439,6 +483,23 @@ public class HUD : MonoBehaviour
             nodeColorButtons[i].interactable = i != currentNodeColorNumber;
 
         SelectNode();
+    }
+
+    public void SelectCancel()
+    {
+        warning.SetActive(false);
+    }
+
+    public void SelectProceed()
+    {
+        warning.SetActive(false);
+
+        warningDelegate();
+    }
+
+    private void ToggleWarningMessage(bool unsavedWarning)
+    {
+        warningText.text = unsavedWarning ? "You have unsaved changes!" : "The entire grid will be erased!";
     }
 
     public void SelectTutorial()
