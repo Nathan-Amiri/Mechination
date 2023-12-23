@@ -126,12 +126,11 @@ public class Gadget : Cell
         {
             // Fail checks ordered by performance cost
 
-            // Fail 1: tearing cell (preparing to move cell in multiple directions)
-            if (cell.tearFail) return;
+            // Fail 1: cell is this gadget
+            if (cell == this) return;
 
-            // Fail 2: cell is a gadget that's preparing to activate
-            if (cell is Gadget gadget && gadget.movingCells.Count > 0)
-                return;
+            // Fail 2: tearing cell (preparing to move cell in multiple directions)
+            if (cell.tearFail) return;
 
             // Fail 3: moving cell off grid
             // MaxMoveDistanceFrom Origin = half of the grid's length (1000) x the grid's scale (2) = 1000
