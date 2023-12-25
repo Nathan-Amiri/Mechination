@@ -1601,8 +1601,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectLoadSaveFile
         m_Mode: 3
         m_Arguments:
@@ -2232,8 +2232,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectLoadSaveFile
         m_Mode: 3
         m_Arguments:
@@ -3585,8 +3585,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectLoadSaveFile
         m_Mode: 3
         m_Arguments:
@@ -4070,8 +4070,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectMagnet
         m_Mode: 1
         m_Arguments:
@@ -4204,8 +4204,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectNode
         m_Mode: 1
         m_Arguments:
@@ -4436,7 +4436,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 525741725}
-  - component: {fileID: 525741726}
   m_Layer: 5
   m_Name: HUD
   m_TagString: Untagged
@@ -4478,66 +4477,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &525741726
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 525741724}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5b9a7b717d49e94aac4133944ab2409, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  pulserPref: {fileID: 1381589373935940711, guid: b8129d57ecbfb5b4bac8e60c4fb8f8f8, type: 3}
-  magnetPref: {fileID: 3194071411580917996, guid: ad9d84567bf980349b03f7af79e0f602, type: 3}
-  nodePref: {fileID: 4824288894598561998, guid: 43368d0fd028a224c81533929a283ab2, type: 3}
-  cycleManager: {fileID: 545653284}
-  saveAndLoad: {fileID: 545653285}
-  mainCamera: {fileID: 519420031}
-  cellParent: {fileID: 1631608302}
-  playIcon: {fileID: 41055344}
-  stopIcon: {fileID: 1575938501}
-  eraserIcon: {fileID: 488142311}
-  clearIcon: {fileID: 26172109}
-  tickSpeedMultiplierText: {fileID: 1850113763}
-  saveButton: {fileID: 1290923626}
-  saveFileButtons:
-  - {fileID: 1015882331}
-  - {fileID: 248251633}
-  - {fileID: 160015729}
-  - {fileID: 401043907}
-  - {fileID: 922143222}
-  pulserButton: {fileID: 1731454711}
-  magnetButton: {fileID: 489868768}
-  nodeButton: {fileID: 513175421}
-  eraserButton: {fileID: 1914309053}
-  pulserButtonTR: {fileID: 1731454710}
-  magnetButtonTR: {fileID: 489868767}
-  nodeImage: {fileID: 513175422}
-  nodeColors:
-  - serializedVersion: 2
-    rgba: 4293348786
-  - serializedVersion: 2
-    rgba: 4282897501
-  - serializedVersion: 2
-    rgba: 4281263589
-  - serializedVersion: 2
-    rgba: 4294928714
-  - serializedVersion: 2
-    rgba: 4278220799
-  - serializedVersion: 2
-    rgba: 4279506103
-  nodeColorButtons:
-  - {fileID: 2091069402}
-  - {fileID: 766568777}
-  - {fileID: 1262011619}
-  - {fileID: 2094903885}
-  - {fileID: 1391566444}
-  - {fileID: 1197933196}
-  warning: {fileID: 394781669}
-  warningText: {fileID: 2117399311}
 --- !u!1001 &531133960
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4613,6 +4552,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 545653283}
+  - component: {fileID: 545653286}
   - component: {fileID: 545653284}
   - component: {fileID: 545653285}
   m_Layer: 0
@@ -4661,7 +4601,67 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a93ac4a24de19944a3baa31821aec06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hud: {fileID: 525741726}
+  editModeManager: {fileID: 545653286}
+--- !u!114 &545653286
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 545653282}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5b9a7b717d49e94aac4133944ab2409, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pulserPref: {fileID: 1381589373935940711, guid: b8129d57ecbfb5b4bac8e60c4fb8f8f8, type: 3}
+  magnetPref: {fileID: 3194071411580917996, guid: ad9d84567bf980349b03f7af79e0f602, type: 3}
+  nodePref: {fileID: 4824288894598561998, guid: 43368d0fd028a224c81533929a283ab2, type: 3}
+  playModeManager: {fileID: 545653284}
+  saveAndLoad: {fileID: 545653285}
+  mainCamera: {fileID: 519420031}
+  cellParent: {fileID: 1631608302}
+  playIcon: {fileID: 41055344}
+  stopIcon: {fileID: 1575938501}
+  eraserIcon: {fileID: 488142311}
+  clearIcon: {fileID: 26172109}
+  tickSpeedMultiplierText: {fileID: 1850113763}
+  saveButton: {fileID: 1290923626}
+  saveFileButtons:
+  - {fileID: 1015882331}
+  - {fileID: 248251633}
+  - {fileID: 160015729}
+  - {fileID: 401043907}
+  - {fileID: 922143222}
+  pulserButton: {fileID: 1731454711}
+  magnetButton: {fileID: 489868768}
+  nodeButton: {fileID: 513175421}
+  eraserButton: {fileID: 1914309053}
+  pulserButtonTR: {fileID: 1731454710}
+  magnetButtonTR: {fileID: 489868767}
+  nodeImage: {fileID: 513175422}
+  nodeColors:
+  - serializedVersion: 2
+    rgba: 4293348786
+  - serializedVersion: 2
+    rgba: 4282897501
+  - serializedVersion: 2
+    rgba: 4281263589
+  - serializedVersion: 2
+    rgba: 4294928714
+  - serializedVersion: 2
+    rgba: 4278220799
+  - serializedVersion: 2
+    rgba: 4279506103
+  nodeColorButtons:
+  - {fileID: 2091069402}
+  - {fileID: 766568777}
+  - {fileID: 1262011619}
+  - {fileID: 2094903885}
+  - {fileID: 1391566444}
+  - {fileID: 1197933196}
+  warning: {fileID: 394781669}
+  warningText: {fileID: 2117399311}
 --- !u!1 &555224406
 GameObject:
   m_ObjectHideFlags: 0
@@ -5005,8 +5005,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectTutorial
         m_Mode: 1
         m_Arguments:
@@ -5909,8 +5909,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectNodeColor
         m_Mode: 3
         m_Arguments:
@@ -7034,8 +7034,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectPlayStop
         m_Mode: 1
         m_Arguments:
@@ -7546,8 +7546,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectLoadSaveFile
         m_Mode: 3
         m_Arguments:
@@ -7900,8 +7900,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectLoadSaveFile
         m_Mode: 3
         m_Arguments:
@@ -9212,8 +9212,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectTickMultipler
         m_Mode: 1
         m_Arguments:
@@ -9423,8 +9423,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectProceed
         m_Mode: 1
         m_Arguments:
@@ -9879,8 +9879,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectNodeColor
         m_Mode: 3
         m_Arguments:
@@ -10491,8 +10491,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectNodeColor
         m_Mode: 3
         m_Arguments:
@@ -10695,8 +10695,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectSave
         m_Mode: 1
         m_Arguments:
@@ -11421,8 +11421,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectNodeColor
         m_Mode: 3
         m_Arguments:
@@ -13466,8 +13466,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectCancel
         m_Mode: 1
         m_Arguments:
@@ -13858,8 +13858,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectExit
         m_Mode: 1
         m_Arguments:
@@ -14020,8 +14020,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectPulser
         m_Mode: 1
         m_Arguments:
@@ -15048,8 +15048,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectEraserClear
         m_Mode: 1
         m_Arguments:
@@ -16520,8 +16520,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectNodeColor
         m_Mode: 3
         m_Arguments:
@@ -16653,8 +16653,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 525741726}
-        m_TargetAssemblyTypeName: HUD, Assembly-CSharp
+      - m_Target: {fileID: 545653286}
+        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
         m_MethodName: SelectNodeColor
         m_Mode: 3
         m_Arguments:

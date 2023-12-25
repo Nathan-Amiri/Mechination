@@ -8,12 +8,12 @@ public class Cell : MonoBehaviour
     // STATIC:
     public static Dictionary<Vector2Int, Cell> gridIndex = new();
 
-        // Key = Stopmode position between fastened cells, value = fastener
-        // Used during Stopmode
+        // Key = Position between fastened cells, value = fastener
+        // Used outside PlayMode
     public static Dictionary<Vector2Int, GameObject> fastenerIndex = new();
 
         // Key = a cell with fastenings, value = list of cells the key cell is fastened to
-        // Used during Playmode
+        // Used during PlayMode
     public static Dictionary<Cell, List<Cell>> fastenedCells = new();
 
     // PREFAB REFERENCE:
@@ -144,12 +144,12 @@ public class Cell : MonoBehaviour
 
         // Add the position this cell is preparing to move to to positionSafety. If position has been
         // Claimed by another cell, declare the position unsafe
-        if (!CycleManager.positionSafety.TryGetValue(movePosition, out PositionSafetyInfo positionSafetyInfo))
-            CycleManager.positionSafety.Add(movePosition, new PositionSafetyInfo { cellClaimingPosition = this, positionUnsafe = false });
+        if (!PlayModeManager.positionSafety.TryGetValue(movePosition, out PositionSafetyInfo positionSafetyInfo))
+            PlayModeManager.positionSafety.Add(movePosition, new PositionSafetyInfo { cellClaimingPosition = this, positionUnsafe = false });
         else if (positionSafetyInfo.cellClaimingPosition != this)
         {
             positionSafetyInfo.positionUnsafe = true;
-            CycleManager.positionSafety[movePosition] = positionSafetyInfo;
+            PlayModeManager.positionSafety[movePosition] = positionSafetyInfo;
         }
         // Else if cellClaimingPosition IS this, do nothing
 
@@ -191,7 +191,7 @@ public class Cell : MonoBehaviour
         Vector2 endPosition = preparedMovePosition;
 
             // Cache tick speed in case it changes during the lerp
-        float tickSpeed = CycleManager.TickSpeed;
+        float tickSpeed = PlayModeManager.TickSpeed;
         while (timeLerped < tickSpeed)
         {
             transform.position = Vector2.Lerp(startPosition, endPosition, timeLerped / tickSpeed);

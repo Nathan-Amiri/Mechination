@@ -5,7 +5,7 @@ using System.IO;
 
 public class SaveAndLoad : MonoBehaviour
 {
-    [SerializeField] private HUD hud;
+    [SerializeField] private EditModeManager editModeManager;
 
     private string saveFile;
 
@@ -20,7 +20,7 @@ public class SaveAndLoad : MonoBehaviour
     {
         if (!File.Exists(saveFile)) return;
 
-        hud.ClearGrid();
+        editModeManager.ClearGrid();
 
         // Get layoutData from file
         string fileContents = File.ReadAllText(saveFile);
@@ -30,7 +30,7 @@ public class SaveAndLoad : MonoBehaviour
         {
             Quaternion cellRotation = Quaternion.Euler(0, 0, cellData.cellRotation);
 
-            hud.SpawnCell(cellData.cellType, cellData.cellPosition, cellRotation, cellData.nodeColorNumber);
+            editModeManager.SpawnCell(cellData.cellType, cellData.cellPosition, cellRotation, cellData.nodeColorNumber);
         }
     }
 

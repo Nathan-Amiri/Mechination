@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CycleManager : MonoBehaviour
+public class PlayModeManager : MonoBehaviour
 {
     // STATIC:
     public delegate void OnPlayAction();

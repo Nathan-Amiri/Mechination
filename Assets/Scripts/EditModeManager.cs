@@ -5,14 +5,14 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class HUD : MonoBehaviour
+public class EditModeManager : MonoBehaviour
 {
     // SCENE REFERENCE
     [SerializeField] private Cell pulserPref;
     [SerializeField] private Cell magnetPref;
     [SerializeField] private Cell nodePref;
 
-    [SerializeField] private CycleManager cycleManager;
+    [SerializeField] private PlayModeManager playModeManager;
     [SerializeField] private SaveAndLoad saveAndLoad;
 
     [SerializeField] private Camera mainCamera;
@@ -83,7 +83,7 @@ public class HUD : MonoBehaviour
         if (PlayerPrefs.HasKey("tickSpeedMultiplier"))
             UpdateTickMultiplier(PlayerPrefs.GetFloat("tickSpeedMultiplier"));
         else
-            cycleManager.SetTickSpeed(1);
+            playModeManager.SetTickSpeed(1);
 
         if (PlayerPrefs.HasKey("currentLayoutNumber"))
             SelectLoadSaveFile(PlayerPrefs.GetInt("currentLayoutNumber"));
@@ -331,7 +331,7 @@ public class HUD : MonoBehaviour
         // If stopping, stop cycle, clear, load layout, then adjust interactable in that order
         if (!isPlaying)
         {
-            cycleManager.StartStopCycle(false);
+            playModeManager.StartStopCycle(false);
 
             saveAndLoad.LoadLayout(currentLayoutNumber);
         }
@@ -352,7 +352,7 @@ public class HUD : MonoBehaviour
         {
             SelectSave();
 
-            cycleManager.StartStopCycle(true);
+            playModeManager.StartStopCycle(true);
         }
     }
     private void SetCellButtonsInteractable(Button newUninteractableButton, bool disableAll = false)
@@ -390,7 +390,7 @@ public class HUD : MonoBehaviour
         currentTickSpeedMultiplier = newMultiplier;
 
         // Change tick speed
-        cycleManager.SetTickSpeed(newMultiplier);
+        playModeManager.SetTickSpeed(newMultiplier);
     }
 
     public void SelectPulser()

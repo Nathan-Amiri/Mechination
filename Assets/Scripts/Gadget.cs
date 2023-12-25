@@ -26,14 +26,14 @@ public class Gadget : Cell
 
     protected void OnEnable()
     {
-        CycleManager.ReversePrepareGadgets += ReverseGadget;
-        CycleManager.OnPlay += OnPlay;
+        PlayModeManager.ReversePrepareGadgets += ReverseGadget;
+        PlayModeManager.OnPlay += OnPlay;
     }
 
     protected void OnDisable()
     {
-        CycleManager.ReversePrepareGadgets -= ReverseGadget;
-        CycleManager.OnPlay -= OnPlay;
+        PlayModeManager.ReversePrepareGadgets -= ReverseGadget;
+        PlayModeManager.OnPlay -= OnPlay;
     }
 
     private List<Cell> GetAdjacentNodes()
@@ -93,7 +93,7 @@ public class Gadget : Cell
         frontCell.GetMovingCell(this, gadgetDirection);
 
         // Add to prepared gadgets
-        CycleManager.preparedGadgets.Add(this);
+        PlayModeManager.preparedGadgets.Add(this);
     }
 
     private void PrepareMagnet()
@@ -111,7 +111,7 @@ public class Gadget : Cell
         targetCell.GetMovingCell(this, -gadgetDirection);
 
         // Add to prepared gadgets
-        CycleManager.preparedGadgets.Add(this);
+        PlayModeManager.preparedGadgets.Add(this);
     }
 
     public void ActivateGadget()
@@ -148,7 +148,7 @@ public class Gadget : Cell
                 return;
 
             // Fail 4: cell is moving into an unsafe space (a space other cell(s) are preparing to move into)
-            if (!CycleManager.positionSafety.TryGetValue(cell.preparedMovePosition, out PositionSafetyInfo positionSafetyInfo))
+            if (!PlayModeManager.positionSafety.TryGetValue(cell.preparedMovePosition, out PositionSafetyInfo positionSafetyInfo))
                 Debug.LogError("position not found in positionSafe");
             else if (positionSafetyInfo.positionUnsafe == true)
                 return;
