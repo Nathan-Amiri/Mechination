@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Video;
 
 public class Cell : MonoBehaviour
 {
@@ -36,7 +37,6 @@ public class Cell : MonoBehaviour
     // Used for layout saving:
     [NonSerialized] public int cellType; // 0 = node, 1 = pulser, 2 = magnet
     [NonSerialized] public int nodeColorNumber;
-
     public void FastenCell()
     {
         List<Cell> cellsToFasten = new();
