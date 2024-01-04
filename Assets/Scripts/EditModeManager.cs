@@ -47,6 +47,14 @@ public class EditModeManager : MonoBehaviour
     [SerializeField] private GameObject warning;
     [SerializeField] private TMP_Text warningText;
 
+    [SerializeField] private GameObject openTutorialMessage;
+    [SerializeField] private GameObject tutorialScreen;
+    [SerializeField] private GameObject tutorialPage1;
+    [SerializeField] private GameObject tutorialPage2;
+    [SerializeField] private Button tutorialBackButton;
+    [SerializeField] private GameObject tutorialNextButton;
+    [SerializeField] private GameObject tutorialFinishButton;
+
     // DYNAMIC
     public enum SpawnType { pulser, magnet, node, eraser }
     private SpawnType currentSpawnType;
@@ -89,6 +97,9 @@ public class EditModeManager : MonoBehaviour
             SelectLoadSaveFile(PlayerPrefs.GetInt("currentLayoutNumber"));
         else
             SelectLoadSaveFile(0);
+
+        if (!PlayerPrefs.HasKey("TutorialOpened"))
+            openTutorialMessage.SetActive(true);
     }
 
     private void Update()
@@ -504,6 +515,42 @@ public class EditModeManager : MonoBehaviour
 
     public void SelectTutorial()
     {
+        // Keep tutorial button interactable when playing in case a new user hits play by accident, then gets confused
+        if (isPlaying)
+            SelectPlayStop();
 
+        if (openTutorialMessage.activeSelf)
+        {
+            openTutorialMessage.SetActive(false);
+            // Value doesn't matter -- if key exists, it won't display again
+            PlayerPrefs.SetInt("TutorialOpened", 0);
+        }
+
+        tutorialScreen.SetActive(true);
+    }
+    public void SelectTutorialBack()
+    {
+        tutorialBackButton.interactable = false;
+        tutorialFinishButton.SetActive(false);
+        tutorialNextButton.SetActive(true);
+
+        tutorialPage1.SetActive(true);
+        tutorialPage2.SetActive(false);
+    }
+    public void SelectTutorialNext()
+    {
+        tutorialBackButton.interactable = true;
+        tutorialNextButton.SetActive(false);
+        tutorialFinishButton.SetActive(true);
+
+        tutorialPage1.SetActive(false);
+        tutorialPage2.SetActive(true);
+    }
+    public void SelectTutorialFinish()
+    {
+        // Reset pages/buttons before closing
+        SelectTutorialBack();
+
+        tutorialScreen.SetActive(false);
     }
 }
