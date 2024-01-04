@@ -11,6 +11,8 @@ public class TutorialVideo : MonoBehaviour
 
     public void SelectNewClip(int clipNumber)
     {
+        videoPlayer.Stop();
         videoPlayer.clip = tutorialClips[clipNumber];
+        videoPlayer.Play();
     }
 }
