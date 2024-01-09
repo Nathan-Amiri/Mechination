@@ -12655,7 +12655,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_FirstSelected: {fileID: 0}
-  m_sendNavigationEvents: 1
+  m_sendNavigationEvents: 0
   m_DragThreshold: 10
 --- !u!4 &809853824
 Transform:
@@ -16926,7 +16926,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 545653286}
-        m_TargetAssemblyTypeName: EditorManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: EditModeManager, Assembly-CSharp
         m_MethodName: SelectTickMultipler
         m_Mode: 1
         m_Arguments:
