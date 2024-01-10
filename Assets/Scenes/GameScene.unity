@@ -2139,7 +2139,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 3. If any Nodes move next to a Pulser or Magnet, it reverses its polarity,
+  m_text: 3. If a Node moves next to a Pulser or Magnet, it reverses its polarity,
     transforming it into a Magnet or Pulser, respectively
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
