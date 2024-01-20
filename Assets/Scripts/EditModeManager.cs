@@ -269,9 +269,10 @@ public class EditModeManager : MonoBehaviour
     private Vector2Int MouseGridPosition()
     {
         Vector3 mousePos = Input.mousePosition;
-        mousePos.z = 10;
-        Vector3 selectedPosition = mainCamera.ScreenToWorldPoint(mousePos);
-        return new(RoundFloatToOddInt(selectedPosition.x), RoundFloatToOddInt(selectedPosition.y));
+        mousePos.z = -mainCamera.transform.position.z;
+        Vector3 mousePositionOnGrid = mainCamera.ScreenToWorldPoint(mousePos);
+
+        return new(RoundFloatToOddInt(mousePositionOnGrid.x), RoundFloatToOddInt(mousePositionOnGrid.y));
     }
 
     private int RoundFloatToOddInt(float f)

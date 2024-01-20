@@ -8264,6 +8264,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   mainCamera: {fileID: 519420031}
+  zoomXYSensitivity: 0.1
 --- !u!1 &525741724
 GameObject:
   m_ObjectHideFlags: 0

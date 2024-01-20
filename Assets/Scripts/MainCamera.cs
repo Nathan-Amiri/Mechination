@@ -8,18 +8,24 @@ public class MainCamera : MonoBehaviour
     [SerializeField] private Camera mainCamera;
 
     // Zoom
-    private readonly float zoomSensitivity = 20;
-    private readonly float minZoom = 50;
-    private readonly float maxZoom = 180;
+    private readonly float zoomZSensitivity = .75f;
+    public float zoomXYSensitivity = .8f;
+    private readonly float minZoom = -500;
+    private readonly float maxZoom = -3;
 
-    private float currentZoomAmount;
+    private float scrollInput;
 
     // Pan
-    private readonly float panSensitivity = .02f;
+    private readonly float panSensitivity = .0019f;
 
     private Vector3 initialCameraPosition;
     private Vector3 initialMousePosition;
     private bool isPanning;
+
+    private void Update()
+    {
+        scrollInput = Input.GetAxis("Mouse ScrollWheel");
+    }
 
     private void LateUpdate()
     {
@@ -30,14 +36,35 @@ public class MainCamera : MonoBehaviour
 
     private void Zoom()
     {
-        float fieldOfView = mainCamera.fieldOfView;
-        fieldOfView -= Input.GetAxis("Mouse ScrollWheel") * zoomSensitivity;
-        fieldOfView = Mathf.Clamp(fieldOfView, minZoom, maxZoom);
-        mainCamera.fieldOfView = fieldOfView;
+        if (scrollInput == 0)
+            return;
 
-        // 115 is the middle zoom amount
-        // CurrentZoomAmount ranges from -.5 to 1.5
-        currentZoomAmount = (fieldOfView / 115) - 1;
+        float cameraDistance = transform.position.z;
+
+        // Increase zoom speed based on current distance
+        cameraDistance -= cameraDistance * scrollInput * zoomZSensitivity;
+
+        cameraDistance = Mathf.Clamp(cameraDistance, minZoom, maxZoom);
+
+        Vector3 newCameraPositionXY;
+        if (scrollInput < 0) // If zooming out
+            newCameraPositionXY = transform.position;
+        else
+        {
+            // Get mouse position
+            Vector3 inputMousePos = Input.mousePosition;
+            inputMousePos.z = -transform.position.z;
+            Vector2 mousePosition = mainCamera.ScreenToWorldPoint(inputMousePos);
+
+            Vector2 cameraPositionXY = (Vector2)transform.position;
+
+            Vector2 cameraOffset = scrollInput * zoomXYSensitivity * (mousePosition - cameraPositionXY);
+
+            newCameraPositionXY = transform.position + (Vector3)cameraOffset;
+        }
+
+
+        transform.position = new Vector3(newCameraPositionXY.x, newCameraPositionXY.y, cameraDistance);
     }
 
     private void Pan()
@@ -48,12 +75,13 @@ public class MainCamera : MonoBehaviour
             initialMousePosition = Input.mousePosition;
             isPanning = true;
         }
-        
+
         if (isPanning)
         {
             Vector3 mouseDelta = initialMousePosition - Input.mousePosition;
-            // Increase pan speed exponentially based on zoom amount, with a growth rate of 50
-            Vector3 cameraDelta = panSensitivity * Mathf.Pow(50, currentZoomAmount) * mouseDelta;
+
+            // Increase pan speed when camera is farther from grid
+            Vector3 cameraDelta = -transform.position.z * panSensitivity * mouseDelta;
 
             Vector3 targetCameraPosition = initialCameraPosition + cameraDelta;
 
