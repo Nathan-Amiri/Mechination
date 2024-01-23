@@ -14,7 +14,7 @@ public class EditModeManager : MonoBehaviour
 
     [SerializeField] private PlayModeManager playModeManager;
     [SerializeField] private SaveAndLoad saveAndLoad;
-    [SerializeField] private EditModeAudio editModeAudio;
+    [SerializeField] private GameAudio gameAudio;
 
     [SerializeField] private Camera mainCamera;
 
@@ -107,12 +107,12 @@ public class EditModeManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            StartCoroutine(editModeAudio.PlayShortcut());
+            StartCoroutine(gameAudio.PlayShortcut());
             SelectExit();
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            StartCoroutine(editModeAudio.PlayShortcut());
+            StartCoroutine(gameAudio.PlayShortcut());
             SelectPlayStop();
         }
 
@@ -120,27 +120,27 @@ public class EditModeManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.S) && saveButton.interactable)
         {
-            StartCoroutine(editModeAudio.PlayShortcut());
+            StartCoroutine(gameAudio.PlayShortcut());
             SelectSave();
         }
         if (Input.GetKeyDown(KeyCode.Q) && pulserButton.interactable)
         {
-            StartCoroutine(editModeAudio.PlayShortcut());
+            StartCoroutine(gameAudio.PlayShortcut());
             SelectPulser();
         }
         if (Input.GetKeyDown(KeyCode.W) && magnetButton.interactable)
         {
-            StartCoroutine(editModeAudio.PlayShortcut());
+            StartCoroutine(gameAudio.PlayShortcut());
             SelectMagnet();
         }
         if (Input.GetKeyDown(KeyCode.E) && nodeButton.interactable)
         {
-            StartCoroutine(editModeAudio.PlayShortcut());
+            StartCoroutine(gameAudio.PlayShortcut());
             SelectNode();
         }
         if (Input.GetKeyDown(KeyCode.R) && eraserButton.interactable)
         {
-            StartCoroutine(editModeAudio.PlayShortcut());
+            StartCoroutine(gameAudio.PlayShortcut());
             SelectEraserClear();
         }
 
@@ -172,7 +172,7 @@ public class EditModeManager : MonoBehaviour
         StartCoroutine(
 
                 // Rotate gadget, gadget button, and future spawned gadgets of the selected type
-                editModeAudio.PlayCellRotate());
+                gameAudio.PlayCellRotate());
         gadget.transform.rotation *= Quaternion.Euler(0, 0, -90);
         gadget.gadgetDirection = Vector2Int.RoundToInt(gadget.transform.up);
 
@@ -220,8 +220,7 @@ public class EditModeManager : MonoBehaviour
         if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
         {
             if (currentSpawnType != SpawnType.eraser && CellAlreadySpawned(cellAtPosition)) return;
-            StartCoroutine(
-                        editModeAudio.PlayCellPlaceErase());
+            StartCoroutine(gameAudio.PlayCellPlaceErase());
             DespawnCell(cellAtPosition, gridPosition, true);
             // After erasing, layout has changed
             UpdateLayoutSaved(false);
@@ -230,15 +229,17 @@ public class EditModeManager : MonoBehaviour
         if (currentSpawnType == SpawnType.eraser) return;
 
         // Spawn new cell
-        SpawnCell(newCellType, gridPosition, spawnRotation, currentNodeColorNumber);
+        SpawnCell(newCellType, gridPosition, spawnRotation, currentNodeColorNumber, true);
         // After spawning, layout has changed
         UpdateLayoutSaved(false);
     }
     
     // Called by PrepareToSpawnCell and SaveAndLoad's LoadLayout
-    public void SpawnCell(int newCellType, Vector2Int gridPosition, Quaternion spawnRotation, int nodeColorNumber)
+    public void SpawnCell(int newCellType, Vector2Int gridPosition, Quaternion spawnRotation, int nodeColorNumber, bool playSpawnAudio)
     {
-        StartCoroutine(editModeAudio.PlayCellPlaceErase());
+        if (playSpawnAudio)
+            StartCoroutine(gameAudio.PlayCellPlaceErase());
+
         Cell prefToSpawn = nodePref;
         if (newCellType != 0)
             prefToSpawn = newCellType == 1 ? pulserPref : magnetPref;

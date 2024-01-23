@@ -8307,7 +8307,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -10}
+  m_LocalPosition: {x: 0, y: 0, z: -9}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -8340,7 +8340,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
-  m_Volume: 0.5
+  m_Volume: 0.1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -8441,10 +8441,9 @@ MonoBehaviour:
   shortcutClip: {fileID: 8300000, guid: b98c01e7797c88542ae21e29a038848b, type: 3}
   cellPlaceEraseClip: {fileID: 8300000, guid: 468bd16b39300084d979c297402f6be7, type: 3}
   cellRotateClip: {fileID: 8300000, guid: 49c413bf801f86c41950804312a7d6b4, type: 3}
-  uiClickVolume: 0.5
-  shortcutVolume: 0.5
-  cellPlaceEraseVolume: 0.5
-  cellRotateVolume: 0.5
+  pulserPushClip: {fileID: 8300000, guid: 387619a869dcf804099d3aa3fce0ee00, type: 3}
+  magnetPullClip: {fileID: 8300000, guid: 7fee11a1c4cf97849b7914b9692cdec2, type: 3}
+  nodeReverseClip: {fileID: 8300000, guid: c055ecc524e9a9a47b4e4b8aac4b3c18, type: 3}
 --- !u!81 &519420036
 AudioListener:
   m_ObjectHideFlags: 0
@@ -8753,6 +8752,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 905aed5a21209894b95cbb32d1deb391, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  gameAudio: {fileID: 519420035}
 --- !u!114 &545653285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8783,7 +8783,7 @@ MonoBehaviour:
   nodePref: {fileID: 4824288894598561998, guid: 43368d0fd028a224c81533929a283ab2, type: 3}
   playModeManager: {fileID: 545653284}
   saveAndLoad: {fileID: 545653285}
-  editModeAudio: {fileID: 519420035}
+  gameAudio: {fileID: 519420035}
   mainCamera: {fileID: 519420031}
   cellParent: {fileID: 1631608302}
   playIcon: {fileID: 41055344}

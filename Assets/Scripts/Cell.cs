@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Video;
 
 public class Cell : MonoBehaviour
 {
@@ -28,6 +27,8 @@ public class Cell : MonoBehaviour
     };
 
     // DYNAMIC:
+    protected Camera mainCamera;
+
     [NonSerialized] public Vector2Int preparedMovePosition;
         // True when this cell is preparing to move into more than one position
     [NonSerialized] public bool tearFail;
@@ -37,6 +38,12 @@ public class Cell : MonoBehaviour
     // Used for layout saving:
     [NonSerialized] public int cellType; // 0 = node, 1 = pulser, 2 = magnet
     [NonSerialized] public int nodeColorNumber;
+
+    protected void Start()
+    {
+        mainCamera = Camera.main;
+    }
+
     public void FastenCell()
     {
         List<Cell> cellsToFasten = new();

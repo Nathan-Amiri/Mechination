@@ -62,13 +62,24 @@ public class Gadget : Cell
     {
         List<Cell> currentAdjacentNodes = GetAdjacentNodes();
 
-        // If any nodes are adjacent that weren't last tick, reverse
+        // Check if any nodes are adjacent that weren't last tick
         foreach (Cell node in currentAdjacentNodes)
             if (!adjacentNodes.Contains(node))
             {
+                // Reverse gadget
                 isPulser = !isPulser;
                 cellSr.color = isPulser ? pulserColor : magnetColor;
                 iconSr.sprite = isPulser ? pulserSprite : magnetSprite;
+
+                // Play sound
+                    // Check if volume for this sound effect is already maxed
+                if (GameAudio.nodeReverseVolume >= .5f)
+                    break;
+
+                if (!CellIsWithinViewport())
+                    break;
+
+                GameAudio.nodeReverseVolume += .125f;
 
                 break;
             }
@@ -126,6 +137,7 @@ public class Gadget : Cell
         {
             // Fail checks ordered by performance cost
 
+
             // Fail 1: cell is this gadget
             if (cell == this) return;
 
@@ -154,9 +166,26 @@ public class Gadget : Cell
                 return;
         }
 
+
         // Move cells
         foreach (Cell cell in movingCells)
             StartCoroutine(cell.LerpMovement());
+
+
+        // Play sound
+            // Check if volume for this sound effect is already maxed
+        if (isPulser && GameAudio.pulserPushVolume >= .5f)
+            return;
+        if (!isPulser && GameAudio.magnetPullVolume >= .5f)
+            return;
+
+        if (!CellIsWithinViewport())
+            return;
+
+        if (isPulser)
+            GameAudio.pulserPushVolume += .125f;
+        else
+            GameAudio.magnetPullVolume += .125f;
     }
 
     public void ResetAfterCycle()
@@ -165,5 +194,17 @@ public class Gadget : Cell
             cell.CellReset();
 
         movingCells.Clear();
+    }
+
+    private bool CellIsWithinViewport()
+    {
+        Vector2 positionInViewport = mainCamera.WorldToViewportPoint(transform.position);
+
+        if (0 > positionInViewport.x || positionInViewport.x > 1)
+            return false;
+        if (0 > positionInViewport.y || positionInViewport.y > 1)
+            return false;
+
+        return true;
     }
 }

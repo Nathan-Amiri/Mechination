@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PlayModeManager : MonoBehaviour
 {
+    [SerializeField] private GameAudio gameAudio;
+
     // STATIC:
     public delegate void OnPlayAction();
     public static OnPlayAction OnPlay;
@@ -29,6 +31,22 @@ public class PlayModeManager : MonoBehaviour
 
     private Coroutine cycleRoutine;
 
+    // Called by HUD
+    public void SetTickSpeed(float newTickSpeedMultipler)
+    {
+        // Change tick speed using reciprocal
+        TickSpeed = defaultTickSpeed * (1 / newTickSpeedMultipler);
+    }
+
+    // Called by HUD
+    public void StartStopCycle(bool start)
+    {
+        if (start)
+            cycleRoutine = StartCoroutine(Cycle());
+        else
+            StopCoroutine(cycleRoutine);
+    }
+
     private IEnumerator Cycle()
     {
         OnPlay?.Invoke();
@@ -45,9 +63,15 @@ public class PlayModeManager : MonoBehaviour
         // Step 1: reverse, then prepare gadgets
         ReversePrepareGadgets?.Invoke();
 
+        // Step 1.5: play node sounds
+        gameAudio.PlayNodeSounds();
+
         // Step 2: gadgets check fail conditions, then activate
         foreach (Gadget preparedGadget in preparedGadgets)
             preparedGadget.ActivateGadget();
+
+        // Step 2.5: play gadget sounds
+        gameAudio.PlayGadgetSounds();
 
         // Step 3: reset for next cycle (all gadgets must check fails/activate before any reset)
         foreach (Gadget preparedGadget in preparedGadgets)
@@ -55,22 +79,6 @@ public class PlayModeManager : MonoBehaviour
 
         preparedGadgets.Clear();
         positionSafety.Clear();
-    }
-
-    // Called by HUD
-    public void SetTickSpeed(float newTickSpeedMultipler)
-    {
-       // Change tick speed using reciprocal
-       TickSpeed = defaultTickSpeed * (1 / newTickSpeedMultipler);
-    }
-
-    // Called by HUD
-    public void StartStopCycle(bool start)
-    {
-        if (start)
-            cycleRoutine = StartCoroutine(Cycle());
-        else
-            StopCoroutine(cycleRoutine);
     }
 }
 public struct PositionSafetyInfo
