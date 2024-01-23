@@ -73,13 +73,13 @@ public class Gadget : Cell
 
                 // Play sound
                     // Check if volume for this sound effect is already maxed
-                if (GameAudio.nodeReverseVolume >= .5f)
+                if (GameAudio.nodeReverseVolumeLevel >= 4)
                     break;
 
                 if (!CellIsWithinViewport())
                     break;
 
-                GameAudio.nodeReverseVolume += .125f;
+                GameAudio.nodeReverseVolumeLevel += 1;
 
                 break;
             }
@@ -178,19 +178,21 @@ public class Gadget : Cell
 
 
         // Play sound
+            // Check if Camera is close enough to Grid
+
             // Check if volume for this sound effect is already maxed
-        if (isPulser && GameAudio.pulserPushVolume >= .5f)
+        if (isPulser && GameAudio.pulserPushVolumeLevel >= 4)
             return;
-        if (!isPulser && GameAudio.magnetPullVolume >= .5f)
+        if (!isPulser && GameAudio.magnetPullVolumeLevel >= 4)
             return;
 
         if (!CellIsWithinViewport())
             return;
 
         if (isPulser)
-            GameAudio.pulserPushVolume += .125f;
+            GameAudio.pulserPushVolumeLevel += 1;
         else
-            GameAudio.magnetPullVolume += .125f;
+            GameAudio.magnetPullVolumeLevel += 1;
     }
 
     public void ResetAfterCycle()
@@ -203,6 +205,10 @@ public class Gadget : Cell
 
     private bool CellIsWithinViewport()
     {
+        // Cut off audio when camera is 200 units away from grid
+        if (mainCamera.transform.position.z < -200)
+            return false;
+
         Vector2 positionInViewport = mainCamera.WorldToViewportPoint(transform.position);
 
         if (0 > positionInViewport.x || positionInViewport.x > 1)

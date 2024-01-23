@@ -8441,9 +8441,9 @@ MonoBehaviour:
   shortcutClip: {fileID: 8300000, guid: b98c01e7797c88542ae21e29a038848b, type: 3}
   cellPlaceEraseClip: {fileID: 8300000, guid: 468bd16b39300084d979c297402f6be7, type: 3}
   cellRotateClip: {fileID: 8300000, guid: 49c413bf801f86c41950804312a7d6b4, type: 3}
-  pulserPushClip: {fileID: 8300000, guid: 387619a869dcf804099d3aa3fce0ee00, type: 3}
-  magnetPullClip: {fileID: 8300000, guid: 7fee11a1c4cf97849b7914b9692cdec2, type: 3}
-  nodeReverseClip: {fileID: 8300000, guid: c055ecc524e9a9a47b4e4b8aac4b3c18, type: 3}
+  pulserPushClip: {fileID: 8300000, guid: 9ef89c4cdd9956c4eac5fe53049a5729, type: 3}
+  magnetPullClip: {fileID: 8300000, guid: 4c479bdcf052cfe4a9bcdc0c1214201a, type: 3}
+  nodeReverseClip: {fileID: 8300000, guid: 361e4b76fa1286a48a62784c42ebafed, type: 3}
 --- !u!81 &519420036
 AudioListener:
   m_ObjectHideFlags: 0
@@ -17741,8 +17741,8 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 519420035}
-        m_TargetAssemblyTypeName: EditModeAudio, Assembly-CSharp
-        m_MethodName: PlayUIClick
+        m_TargetAssemblyTypeName: GameAudio, Assembly-CSharp
+        m_MethodName: PlayUIClickWrapper
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -26161,8 +26161,8 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 519420035}
-        m_TargetAssemblyTypeName: EditModeAudio, Assembly-CSharp
-        m_MethodName: PlayUIClick
+        m_TargetAssemblyTypeName: GameAudio, Assembly-CSharp
+        m_MethodName: PlayUIClickWrapper
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

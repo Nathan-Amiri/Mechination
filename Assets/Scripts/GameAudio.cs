@@ -22,9 +22,9 @@ public class GameAudio : MonoBehaviour
     [SerializeField] private AudioClip magnetPullClip;
     [SerializeField] private AudioClip nodeReverseClip;
 
-    static public float pulserPushVolume;
-    static public float magnetPullVolume;
-    static public float nodeReverseVolume;
+    static public int pulserPushVolumeLevel;
+    static public int magnetPullVolumeLevel;
+    static public int  nodeReverseVolumeLevel;
 
     // PlayMode audio:
         // Wrapper method is needed since ui buttons can't start coroutines
@@ -87,31 +87,34 @@ public class GameAudio : MonoBehaviour
     // PlayMode audio:
     public void PlayNodeSounds()
     {
-        if (nodeReverseVolume > 0)
+        if (nodeReverseVolumeLevel > 0)
         {
-            audioSource.PlayOneShot(nodeReverseClip, nodeReverseVolume);
+            float volume = .02f + .02f * nodeReverseVolumeLevel;
+            audioSource.PlayOneShot(nodeReverseClip, volume);
 
             // Reset
-            nodeReverseVolume = 0;
+            nodeReverseVolumeLevel = 0;
         }
     }
 
     public void PlayGadgetSounds()
     {
-        if (pulserPushVolume > 0)
+        if (pulserPushVolumeLevel > 0)
         {
-            audioSource.PlayOneShot(pulserPushClip, pulserPushVolume);
+            float volume = .02f + .02f * pulserPushVolumeLevel;
+            audioSource.PlayOneShot(pulserPushClip, volume);
 
             // Reset
-            pulserPushVolume = 0;
+            pulserPushVolumeLevel = 0;
         }
 
-        if (magnetPullVolume > 0)
+        if (magnetPullVolumeLevel > 0)
         {
-            audioSource.PlayOneShot(magnetPullClip, magnetPullVolume);
+            float volume = .02f + .02f * magnetPullVolumeLevel;
+            audioSource.PlayOneShot(magnetPullClip, volume);
 
             // Reset
-            magnetPullVolume = 0;
+            magnetPullVolumeLevel = 0;
         }
     }
 }
