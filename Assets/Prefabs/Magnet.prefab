@@ -195,3 +195,10 @@ MonoBehaviour:
   pulserSprite: {fileID: 21300000, guid: 21e078fd8cbda064f83e2080eef88aa5, type: 3}
   magnetSprite: {fileID: 21300000, guid: 8ebc34dc65f55244688a45faeb01c8a2, type: 3}
   isPulser: 0
+  colors:
+  - serializedVersion: 2
+    rgba: 4294950480
+  - serializedVersion: 2
+    rgba: 4294956170
+  - serializedVersion: 2
+    rgba: 4290018334

@@ -6,6 +6,7 @@ public class GameAudio : MonoBehaviour
 {
     [SerializeField] private AudioSource audioSource;
     
+    // EditMode audio:
     [SerializeField] private AudioClip uiClickClip;
     [SerializeField] private AudioClip shortcutClip;
     [SerializeField] private AudioClip cellPlaceEraseClip;
@@ -16,7 +17,17 @@ public class GameAudio : MonoBehaviour
     private bool cellPlaceErasePlaying;
     private bool cellRotatePlaying;
 
-    // Wrapper method is needed since ui buttons can't start coroutines
+    // PlayMode audio:
+    [SerializeField] private AudioClip pulserPushClip;
+    [SerializeField] private AudioClip magnetPullClip;
+    [SerializeField] private AudioClip nodeReverseClip;
+
+    static public float pulserPushVolume;
+    static public float magnetPullVolume;
+    static public float nodeReverseVolume;
+
+    // PlayMode audio:
+        // Wrapper method is needed since ui buttons can't start coroutines
     public void PlayUIClickWrapper()
     {
         StartCoroutine(PlayUIClick(uiClickClip.length));
@@ -73,19 +84,7 @@ public class GameAudio : MonoBehaviour
         cellRotatePlaying = false;
     }
 
-
-
-
-
-
-    [SerializeField] private AudioClip pulserPushClip;
-    [SerializeField] private AudioClip magnetPullClip;
-    [SerializeField] private AudioClip nodeReverseClip;
-
-    static public float pulserPushVolume;
-    static public float magnetPullVolume;
-    static public float nodeReverseVolume;
-
+    // PlayMode audio:
     public void PlayNodeSounds()
     {
         if (nodeReverseVolume > 0)

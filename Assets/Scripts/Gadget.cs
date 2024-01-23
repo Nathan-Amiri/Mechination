@@ -97,7 +97,8 @@ public class Gadget : Cell
     {
         // Check for cell directly in front of this one
         Vector2Int frontPosition = currentPosition + gadgetDirection * 2;
-        if (!gridIndex.TryGetValue(frontPosition, out Cell frontCell)) return;
+        if (!gridIndex.TryGetValue(frontPosition, out Cell frontCell))
+            return;
 
         // Get all moving cells
         movingCells.Clear();
@@ -111,11 +112,13 @@ public class Gadget : Cell
     {
         // Check for cell blocking magnet (directly in front of this one)
         Vector2Int frontPosition = currentPosition + gadgetDirection * 2;
-        if (gridIndex.ContainsKey(frontPosition)) return;
+        if (gridIndex.ContainsKey(frontPosition))
+            return;
 
         // Check for cell in the position 2 spaces in front of this one
         Vector2Int targetPosition = currentPosition + gadgetDirection * 4;
-        if (!gridIndex.TryGetValue(targetPosition, out Cell targetCell)) return;
+        if (!gridIndex.TryGetValue(targetPosition, out Cell targetCell))
+            return;
 
         // Get all moving cells
         movingCells.Clear();
@@ -139,10 +142,12 @@ public class Gadget : Cell
 
 
             // Fail 1: cell is this gadget
-            if (cell == this) return;
+            if (cell == this)
+                return;
 
             // Fail 2: tearing cell (preparing to move cell in multiple directions)
-            if (cell.tearFail) return;
+            if (cell.tearFail)
+                return;
 
             // Fail 3: moving cell off grid
             // MaxMoveDistanceFrom Origin = half of the grid's length (1000) x the grid's scale (2) = 1000

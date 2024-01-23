@@ -56,6 +56,11 @@ public class EditModeManager : MonoBehaviour
     [SerializeField] private GameObject tutorialNextButton;
     [SerializeField] private GameObject tutorialFinishButton;
 
+    [SerializeField] private Image soundToggleImage;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private Sprite soundOnIcon;
+    [SerializeField] private Sprite soundOffIcon;
+
     // DYNAMIC
     public enum SpawnType { pulser, magnet, node, eraser }
     private SpawnType currentSpawnType;
@@ -84,10 +89,14 @@ public class EditModeManager : MonoBehaviour
         // Cached when warning is being displayed after selecting a new layout before saving
     private int newLayoutNumber;
 
+    private bool soundOn = true;
 
     private void Start()
     {
         SelectEraserClear();
+        
+        if (PlayerPrefs.HasKey("SoundOff"))
+            SelectSoundToggle();
 
         if (PlayerPrefs.HasKey("tickSpeedMultiplier"))
             UpdateTickMultiplier(PlayerPrefs.GetFloat("tickSpeedMultiplier"));
@@ -580,5 +589,22 @@ public class EditModeManager : MonoBehaviour
         SelectTutorialBack();
 
         tutorialScreen.SetActive(false);
+    }
+
+    public void SelectSoundToggle()
+    {
+        soundOn = !soundOn;
+
+        if (soundOn)
+            soundToggleImage.sprite = soundOnIcon;
+        else
+            soundToggleImage.sprite = soundOffIcon;
+
+        audioSource.mute = !soundOn;
+
+        if (!soundOn)
+            PlayerPrefs.SetInt("SoundOff", 0);
+        else
+            PlayerPrefs.DeleteKey("SoundOff");
     }
 }
