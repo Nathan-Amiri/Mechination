@@ -14,6 +14,7 @@ public class EditModeManager : MonoBehaviour
 
     [SerializeField] private PlayModeManager playModeManager;
     [SerializeField] private SaveAndLoad saveAndLoad;
+    [SerializeField] private EditModeAudio editModeAudio;
 
     [SerializeField] private Camera mainCamera;
 
@@ -105,22 +106,43 @@ public class EditModeManager : MonoBehaviour
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            StartCoroutine(editModeAudio.PlayShortcut());
             SelectExit();
+        }
         if (Input.GetKeyDown(KeyCode.Space))
+        {
+            StartCoroutine(editModeAudio.PlayShortcut());
             SelectPlayStop();
+        }
 
         if (isPlaying) return;
 
         if (Input.GetKeyDown(KeyCode.S) && saveButton.interactable)
+        {
+            StartCoroutine(editModeAudio.PlayShortcut());
             SelectSave();
+        }
         if (Input.GetKeyDown(KeyCode.Q) && pulserButton.interactable)
+        {
+            StartCoroutine(editModeAudio.PlayShortcut());
             SelectPulser();
+        }
         if (Input.GetKeyDown(KeyCode.W) && magnetButton.interactable)
+        {
+            StartCoroutine(editModeAudio.PlayShortcut());
             SelectMagnet();
+        }
         if (Input.GetKeyDown(KeyCode.E) && nodeButton.interactable)
+        {
+            StartCoroutine(editModeAudio.PlayShortcut());
             SelectNode();
+        }
         if (Input.GetKeyDown(KeyCode.R) && eraserButton.interactable)
+        {
+            StartCoroutine(editModeAudio.PlayShortcut());
             SelectEraserClear();
+        }
 
         // Check if mouse is over UI
         if (EventSystem.current.IsPointerOverGameObject()) return;
@@ -147,8 +169,10 @@ public class EditModeManager : MonoBehaviour
 
         // Check if the gadget is of the selected type
         if (gadget.isPulser != (currentSpawnType == SpawnType.pulser)) return;
+        StartCoroutine(
 
-        // Rotate gadget, gadget button, and future spawned gadgets of the selected type
+                // Rotate gadget, gadget button, and future spawned gadgets of the selected type
+                editModeAudio.PlayCellRotate());
         gadget.transform.rotation *= Quaternion.Euler(0, 0, -90);
         gadget.gadgetDirection = Vector2Int.RoundToInt(gadget.transform.up);
 
@@ -196,7 +220,8 @@ public class EditModeManager : MonoBehaviour
         if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
         {
             if (currentSpawnType != SpawnType.eraser && CellAlreadySpawned(cellAtPosition)) return;
-
+            StartCoroutine(
+                        editModeAudio.PlayCellPlaceErase());
             DespawnCell(cellAtPosition, gridPosition, true);
             // After erasing, layout has changed
             UpdateLayoutSaved(false);
@@ -213,6 +238,7 @@ public class EditModeManager : MonoBehaviour
     // Called by PrepareToSpawnCell and SaveAndLoad's LoadLayout
     public void SpawnCell(int newCellType, Vector2Int gridPosition, Quaternion spawnRotation, int nodeColorNumber)
     {
+        StartCoroutine(editModeAudio.PlayCellPlaceErase());
         Cell prefToSpawn = nodePref;
         if (newCellType != 0)
             prefToSpawn = newCellType == 1 ? pulserPref : magnetPref;
