@@ -190,10 +190,10 @@ public class EditModeManager : MonoBehaviour
 
         // Check if the gadget is of the selected type
         if (gadget.isPulser != (currentSpawnType == SpawnType.pulser)) return;
-        StartCoroutine(
 
-                // Rotate gadget, gadget button, and future spawned gadgets of the selected type
-                gameAudio.PlayCellRotate());
+        StartCoroutine(gameAudio.PlayCellRotate());
+
+        // Rotate gadget, gadget button, and future spawned gadgets of the selected type
         gadget.transform.rotation *= Quaternion.Euler(0, 0, -90);
         gadget.gadgetDirection = Vector2Int.RoundToInt(gadget.transform.up);
 
@@ -214,6 +214,11 @@ public class EditModeManager : MonoBehaviour
         // Unfasten and refasten gadget after rotating
         gadget.UnFastenCell();
         gadget.FastenCell();
+
+
+        // If in tutorial mode, change tutorial page
+        if (tutorial.tutorialMode)
+            tutorial.NextTutorialPage();
     }
 
     private void PrepareToSpawnCell()
@@ -241,10 +246,16 @@ public class EditModeManager : MonoBehaviour
         if (Cell.gridIndex.TryGetValue(gridPosition, out Cell cellAtPosition))
         {
             if (currentSpawnType != SpawnType.eraser && CellAlreadySpawned(cellAtPosition)) return;
+
             StartCoroutine(gameAudio.PlayCellPlaceErase());
+
             DespawnCell(cellAtPosition, gridPosition, true);
             // After erasing, layout has changed
             UpdateLayoutSaved(false);
+
+            // If in tutorial mode and not changing node color, change tutorial page
+            if (tutorial.tutorialMode && currentSpawnType != SpawnType.node)
+                tutorial.NextTutorialPage();
         }
 
         if (currentSpawnType == SpawnType.eraser) return;
@@ -285,7 +296,7 @@ public class EditModeManager : MonoBehaviour
 
         // If in tutorial mode, change tutorial page
         if (tutorial.tutorialMode)
-            tutorial.SelectChangeTutorialPage(true);
+            tutorial.NextTutorialPage();
     }
 
     private bool CellAlreadySpawned(Cell cell)
@@ -418,6 +429,10 @@ public class EditModeManager : MonoBehaviour
 
             playModeManager.StartStopCycle(true);
         }
+
+        // If in tutorial mode, change tutorial page
+        if (tutorial.tutorialMode)
+            tutorial.NextTutorialPage();
     }
     private void SetCellButtonsInteractable(Button newUninteractableButton, bool disableAll = false)
     {
@@ -463,6 +478,10 @@ public class EditModeManager : MonoBehaviour
         SetCellButtonsInteractable(pulserButton);
 
         ToggleErasing(false);
+
+        // If in tutorial mode, change tutorial page
+        if (tutorial.tutorialMode)
+            tutorial.NextTutorialPage();
     }
 
     public void SelectMagnet()
@@ -471,6 +490,10 @@ public class EditModeManager : MonoBehaviour
         SetCellButtonsInteractable(magnetButton);
 
         ToggleErasing(false);
+
+        // If in tutorial mode, change tutorial page
+        if (tutorial.tutorialMode)
+            tutorial.NextTutorialPage();
     }
 
     public void SelectNode()
@@ -479,6 +502,10 @@ public class EditModeManager : MonoBehaviour
         SetCellButtonsInteractable(nodeButton);
 
         ToggleErasing(false);
+
+        // If in tutorial mode, change tutorial page
+        if (tutorial.tutorialMode)
+            tutorial.NextTutorialPage();
     }
 
     public void SelectEraserClear()
@@ -503,6 +530,10 @@ public class EditModeManager : MonoBehaviour
             // Continue erasing whether confirmed or not
             currentlyErasing = true;
         }
+
+        // If in tutorial mode, change tutorial page
+        if (tutorial.tutorialMode)
+            tutorial.NextTutorialPage();
     }
     // Run after warning message confirmed the clear
     private void ClearConfirmed()
@@ -559,6 +590,10 @@ public class EditModeManager : MonoBehaviour
         warning.SetActive(false);
 
         warningDelegate();
+
+        // If in tutorial mode, change tutorial page
+        if (tutorial.tutorialMode)
+            tutorial.NextTutorialPage();
     }
 
     private void ToggleWarningMessage(bool unsavedWarning)
@@ -580,36 +615,7 @@ public class EditModeManager : MonoBehaviour
         }
 
         tutorial.SelectEnterExitTutorial(true);
-
-
-
-        //tutorialScreen.SetActive(true);
     }
-    //public void SelectTutorialBack()
-    //{
-    //    tutorialBackButton.interactable = false;
-    //    tutorialFinishButton.SetActive(false);
-    //    tutorialNextButton.SetActive(true);
-
-    //    tutorialPage1.SetActive(true);
-    //    tutorialPage2.SetActive(false);
-    //}
-    //public void SelectTutorialNext()
-    //{
-    //    tutorialBackButton.interactable = true;
-    //    tutorialNextButton.SetActive(false);
-    //    tutorialFinishButton.SetActive(true);
-
-    //    tutorialPage1.SetActive(false);
-    //    tutorialPage2.SetActive(true);
-    //}
-    //public void SelectTutorialFinish()
-    //{
-    //    // Reset pages/buttons before closing
-    //    SelectTutorialBack();
-
-    //    tutorialScreen.SetActive(false);
-    //}
 
     public void SelectSoundToggle()
     {
