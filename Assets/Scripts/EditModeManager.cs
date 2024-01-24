@@ -15,6 +15,7 @@ public class EditModeManager : MonoBehaviour
     [SerializeField] private PlayModeManager playModeManager;
     [SerializeField] private SaveAndLoad saveAndLoad;
     [SerializeField] private GameAudio gameAudio;
+    [SerializeField] private Tutorial tutorial;
 
     [SerializeField] private Camera mainCamera;
 
@@ -114,44 +115,55 @@ public class EditModeManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // Disable shortcuts in tutorial mode
+        if (!tutorial.tutorialMode)
         {
-            StartCoroutine(gameAudio.PlayShortcut());
-            SelectExit();
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                StartCoroutine(gameAudio.PlayShortcut());
+                SelectExit();
+            }
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                StartCoroutine(gameAudio.PlayShortcut());
+                SelectPlayStop();
+            }
         }
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            StartCoroutine(gameAudio.PlayShortcut());
-            SelectPlayStop();
-        }
+
 
         if (isPlaying) return;
 
-        if (Input.GetKeyDown(KeyCode.S) && saveButton.interactable)
+
+        // Disable shortcuts in tutorial mode
+        if (!tutorial.tutorialMode)
         {
-            StartCoroutine(gameAudio.PlayShortcut());
-            SelectSave();
+            if (Input.GetKeyDown(KeyCode.S) && saveButton.interactable)
+            {
+                StartCoroutine(gameAudio.PlayShortcut());
+                SelectSave();
+            }
+            if (Input.GetKeyDown(KeyCode.Q) && pulserButton.interactable)
+            {
+                StartCoroutine(gameAudio.PlayShortcut());
+                SelectPulser();
+            }
+            if (Input.GetKeyDown(KeyCode.W) && magnetButton.interactable)
+            {
+                StartCoroutine(gameAudio.PlayShortcut());
+                SelectMagnet();
+            }
+            if (Input.GetKeyDown(KeyCode.E) && nodeButton.interactable)
+            {
+                StartCoroutine(gameAudio.PlayShortcut());
+                SelectNode();
+            }
+            if (Input.GetKeyDown(KeyCode.R) && eraserButton.interactable)
+            {
+                StartCoroutine(gameAudio.PlayShortcut());
+                SelectEraserClear();
+            }
         }
-        if (Input.GetKeyDown(KeyCode.Q) && pulserButton.interactable)
-        {
-            StartCoroutine(gameAudio.PlayShortcut());
-            SelectPulser();
-        }
-        if (Input.GetKeyDown(KeyCode.W) && magnetButton.interactable)
-        {
-            StartCoroutine(gameAudio.PlayShortcut());
-            SelectMagnet();
-        }
-        if (Input.GetKeyDown(KeyCode.E) && nodeButton.interactable)
-        {
-            StartCoroutine(gameAudio.PlayShortcut());
-            SelectNode();
-        }
-        if (Input.GetKeyDown(KeyCode.R) && eraserButton.interactable)
-        {
-            StartCoroutine(gameAudio.PlayShortcut());
-            SelectEraserClear();
-        }
+
 
         // Check if mouse is over UI
         if (EventSystem.current.IsPointerOverGameObject()) return;
@@ -270,6 +282,10 @@ public class EditModeManager : MonoBehaviour
 
         // Fasten cell
         newCell.FastenCell();
+
+        // If in tutorial mode, change tutorial page
+        if (tutorial.tutorialMode)
+            tutorial.SelectChangeTutorialPage(true);
     }
 
     private bool CellAlreadySpawned(Cell cell)
@@ -563,33 +579,37 @@ public class EditModeManager : MonoBehaviour
             PlayerPrefs.SetInt("TutorialOpened", 0);
         }
 
-        tutorialScreen.SetActive(true);
-    }
-    public void SelectTutorialBack()
-    {
-        tutorialBackButton.interactable = false;
-        tutorialFinishButton.SetActive(false);
-        tutorialNextButton.SetActive(true);
+        tutorial.SelectEnterExitTutorial(true);
 
-        tutorialPage1.SetActive(true);
-        tutorialPage2.SetActive(false);
-    }
-    public void SelectTutorialNext()
-    {
-        tutorialBackButton.interactable = true;
-        tutorialNextButton.SetActive(false);
-        tutorialFinishButton.SetActive(true);
 
-        tutorialPage1.SetActive(false);
-        tutorialPage2.SetActive(true);
-    }
-    public void SelectTutorialFinish()
-    {
-        // Reset pages/buttons before closing
-        SelectTutorialBack();
 
-        tutorialScreen.SetActive(false);
+        //tutorialScreen.SetActive(true);
     }
+    //public void SelectTutorialBack()
+    //{
+    //    tutorialBackButton.interactable = false;
+    //    tutorialFinishButton.SetActive(false);
+    //    tutorialNextButton.SetActive(true);
+
+    //    tutorialPage1.SetActive(true);
+    //    tutorialPage2.SetActive(false);
+    //}
+    //public void SelectTutorialNext()
+    //{
+    //    tutorialBackButton.interactable = true;
+    //    tutorialNextButton.SetActive(false);
+    //    tutorialFinishButton.SetActive(true);
+
+    //    tutorialPage1.SetActive(false);
+    //    tutorialPage2.SetActive(true);
+    //}
+    //public void SelectTutorialFinish()
+    //{
+    //    // Reset pages/buttons before closing
+    //    SelectTutorialBack();
+
+    //    tutorialScreen.SetActive(false);
+    //}
 
     public void SelectSoundToggle()
     {

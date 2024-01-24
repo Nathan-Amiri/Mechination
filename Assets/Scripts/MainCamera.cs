@@ -7,6 +7,8 @@ public class MainCamera : MonoBehaviour
 {
     [SerializeField] private Camera mainCamera;
 
+    [SerializeField] private Tutorial tutorial;
+
     // Zoom
     private readonly float zoomZSensitivity = .75f;
     public float zoomXYSensitivity = .8f;
@@ -29,6 +31,9 @@ public class MainCamera : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (tutorial.tutorialMode)
+            return;
+
         Zoom();
 
         Pan();
