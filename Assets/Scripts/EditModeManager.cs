@@ -261,15 +261,15 @@ public class EditModeManager : MonoBehaviour
         if (currentSpawnType == SpawnType.eraser) return;
 
         // Spawn new cell
-        SpawnCell(newCellType, gridPosition, spawnRotation, currentNodeColorNumber, true);
+        SpawnCell(newCellType, gridPosition, spawnRotation, currentNodeColorNumber, false);
         // After spawning, layout has changed
         UpdateLayoutSaved(false);
     }
     
     // Called by PrepareToSpawnCell and SaveAndLoad's LoadLayout
-    public void SpawnCell(int newCellType, Vector2Int gridPosition, Quaternion spawnRotation, int nodeColorNumber, bool playSpawnAudio)
+    public void SpawnCell(int newCellType, Vector2Int gridPosition, Quaternion spawnRotation, int nodeColorNumber, bool layoutLoading)
     {
-        if (playSpawnAudio)
+        if (!layoutLoading)
             StartCoroutine(gameAudio.PlayCellPlaceErase());
 
         Cell prefToSpawn = nodePref;
@@ -295,7 +295,7 @@ public class EditModeManager : MonoBehaviour
         newCell.FastenCell();
 
         // If in tutorial mode, change tutorial page
-        if (tutorial.tutorialMode)
+        if (tutorial.tutorialMode && !layoutLoading)
             tutorial.NextTutorialPage();
     }
 
@@ -598,7 +598,7 @@ public class EditModeManager : MonoBehaviour
 
     private void ToggleWarningMessage(bool unsavedWarning)
     {
-        warningText.text = unsavedWarning ? "You have unsaved changes!" : "The entire grid will be erased!";
+        warningText.text = unsavedWarning ? "You have unsaved changes!" : "The entire grid will be cleared!";
     }
 
     public void SelectTutorial()

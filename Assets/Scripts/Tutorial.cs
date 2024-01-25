@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,6 +10,7 @@ public class Tutorial : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialScreen;
 
+    [SerializeField] private GameObject nextArrow;
     [SerializeField] private GameObject indicatorArrow;
 
     [SerializeField] private RectTransform unmaskHoleTransform;
@@ -23,6 +25,16 @@ public class Tutorial : MonoBehaviour
 
     public void SelectEnterExitTutorial(bool enter)
     {
+
+
+
+
+        //prevent tutorial playstop from overriding save layout
+
+
+
+
+
         if (enter)
         {
             tutorialMode = true;
@@ -43,6 +55,7 @@ public class Tutorial : MonoBehaviour
         {
             // revert tickspeed (using playerprefs) and saved layout
             // revert zoom
+            // clear tutorial grid somehow
 
             tutorialScreen.SetActive(false);
 
@@ -62,6 +75,7 @@ public class Tutorial : MonoBehaviour
                     "This tutorial will teach you the basic rules of the game.";
 
                 nextButton.interactable = true;
+                nextArrow.SetActive(true);
 
                 indicatorArrow.SetActive(false);
 
@@ -71,15 +85,16 @@ public class Tutorial : MonoBehaviour
             case 1: // Cell Intro
 
                 tutorialText.text = "In Mechination, you can create machines by placing blocks, called Cells, onto the grid.\n\n" +
-                    "There are three types of Cells: Pulsers, Magnets, and Nodes.";
+                    "There are 3 types of Cells: Pulsers, Magnets, and Nodes.";
 
                 break;
             case 2: // Select Pulser
 
                 tutorialText.text = "Select the Pulser icon,\n\n" +
-                    "then place a Pulser onto the grid as indicated";
+                    "then place a Pulser onto the grid as indicated.";
 
                 nextButton.interactable = false;
+                nextArrow.SetActive(false);
 
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
@@ -129,7 +144,7 @@ public class Tutorial : MonoBehaviour
                 break;
             case 8: // Select Green
 
-                tutorialText.text = "Nodes can be placed in six different colors.\n" +
+                tutorialText.text = "Nodes can be placed in 6 different colors.\n" +
                     "Try switching the Node to green, then back to purple.\n\n" +
                     "A Node's color doesn't affect its behavior.";
 
@@ -165,9 +180,10 @@ public class Tutorial : MonoBehaviour
                 break;
             case 12: // Select Pulser
 
-                tutorialText.text = "You can't change the color of a Pulser or a Magnet, but you can rotate them.";
+                tutorialText.text = "You can't change the color of a Pulser or Magnet, but you can rotate them.";
 
                 nextButton.interactable = true;
+                nextArrow.SetActive(true);
 
                 indicatorArrow.SetActive(false);
 
@@ -179,6 +195,7 @@ public class Tutorial : MonoBehaviour
                 tutorialText.text = "To rotate the Pulser, select the Pulser icon, then left click it on the grid. Rotate it until it's facing up again.";
 
                 nextButton.interactable = false;
+                nextArrow.SetActive(false);
 
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
@@ -187,7 +204,7 @@ public class Tutorial : MonoBehaviour
                 unmaskHoleTransform.gameObject.SetActive(true);
 
                 break;
-            case 14: // Rotate Pulser
+            case 14: // Rotate Pulser Right
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -58);
 
@@ -195,13 +212,18 @@ public class Tutorial : MonoBehaviour
 
                 break;
 
-            // For cases 15-17, do nothing (continue rotating Pulser)
+            // Case 15: Rotate Pulser Down
+
+            // Case 16: Rotate Pulser Left
+
+            // Case 17: Rotate Pulser Up
 
             case 18: // Fasten Intro
 
                 tutorialText.text = "When Cells are placed adjacent to each other (but not diagonally), they Fasten together.";
 
                 nextButton.interactable = true;
+                nextArrow.SetActive(true);
 
                 indicatorArrow.SetActive(false);
 
@@ -213,6 +235,7 @@ public class Tutorial : MonoBehaviour
                 tutorialText.text = "Place a second Node adjacent to the first.";
 
                 nextButton.interactable = false;
+                nextArrow.SetActive(false);
 
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
                 indicatorArrow.SetActive(true);
@@ -233,6 +256,7 @@ public class Tutorial : MonoBehaviour
                 tutorialText.text = "Note the two black lines connecting them, indicating that they are Fastened.";
 
                 nextButton.interactable = true;
+                nextArrow.SetActive(true);
 
                 indicatorArrow.SetActive(false);
 
@@ -243,6 +267,9 @@ public class Tutorial : MonoBehaviour
 
                 tutorialText.text = "Pulsers and Magnets can't be Fastened in the direction they're facing.\n\n" +
                     "To illustrate this, place Nodes around the Pulser.";
+
+                nextButton.interactable = false;
+                nextArrow.SetActive(false);
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, 58);
                 indicatorArrow.SetActive(true);
@@ -277,14 +304,14 @@ public class Tutorial : MonoBehaviour
             case 26: // Select Pulser
 
                 tutorialText.text = "Now, rotate the Pulser until it's facing up again.\n\n" +
-                    "Note how the Pulser is never fastened in the direction it's facing";
+                    "Note how the Pulser is never fastened in the direction it's facing.";
 
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
 
                 unmaskHoleTransform.localPosition = new Vector2(165, -460);
 
                 break;
-            case 27: // Rotate Pulser
+            case 27: // Rotate Pulser Right
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -58);
 
@@ -292,7 +319,11 @@ public class Tutorial : MonoBehaviour
 
                 break;
 
-            // For cases 28-30, do nothing (continue rotating Pulser)
+            // Case 28: Rotate Pulser Down
+
+            // Case 29: Rotate Pulser Left
+
+            // Case 30: Rotate Pulser Up
 
             case 31: // Select Eraser
 
@@ -335,6 +366,7 @@ public class Tutorial : MonoBehaviour
                 tutorialText.text = "When not in the Tutorial, you can pan around the grid using your right mouse button, and zoom in and out with your mouse wheel.";
 
                 nextButton.interactable = true;
+                nextArrow.SetActive(true);
 
                 unmaskHoleTransform.gameObject.SetActive(false);
                 unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
@@ -342,9 +374,7 @@ public class Tutorial : MonoBehaviour
                 break;       
             case 36: // Exit
 
-                tutorialText.text = "When not in the Tutorial, you can quit the game with the Exit button";
-
-                nextButton.interactable = true;
+                tutorialText.text = "When not in the Tutorial, you can quit the game with the Exit button.";
 
                 indicatorArrow.transform.localPosition = new Vector2(-865, -320);
                 indicatorArrow.SetActive(true);
@@ -359,7 +389,7 @@ public class Tutorial : MonoBehaviour
                 break;
             case 38: // Layouts
 
-                tutorialText.text = "Up to five grids can be saved at a time. You can switch between them using the number buttons below.";
+                tutorialText.text = "Up to 5 grids can be saved at a time. You can switch between them using the number buttons below.";
 
                 indicatorArrow.transform.localPosition = new Vector2(-425, -320);
 
@@ -369,8 +399,9 @@ public class Tutorial : MonoBehaviour
                 tutorialText.text = "Press the Play button below to enter Play Mode.";
 
                 nextButton.interactable = false;
+                nextArrow.SetActive(false);
 
-                indicatorArrow.transform.localPosition = new Vector2(-116, -320);
+                indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
                 unmaskHoleTransform.localPosition = new Vector2(-115, -460);
                 unmaskHoleTransform.gameObject.SetActive(true);
@@ -382,6 +413,7 @@ public class Tutorial : MonoBehaviour
                     "When not in the Tutorial, you can speed up/slow down the Cells by pressing the Tempo button.";
 
                 nextButton.interactable = true;
+                nextArrow.SetActive(true);
 
                 indicatorArrow.transform.localPosition = new Vector2(15, -320);
 
@@ -393,8 +425,9 @@ public class Tutorial : MonoBehaviour
                 tutorialText.text = "Press the Stop button to return to Edit Mode, then place Cells on the grid as indicated.";
 
                 nextButton.interactable = false;
+                nextArrow.SetActive(false);
 
-                indicatorArrow.transform.localPosition = new Vector2(-116, -320);
+                indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
                 // Unmask Hole is already in the correct position
                 unmaskHoleTransform.gameObject.SetActive(true);
@@ -421,13 +454,9 @@ public class Tutorial : MonoBehaviour
                 unmaskHoleTransform.localPosition = new Vector2(-515, -58);
 
                 break;
-            case 45: // Rotate Pulser 2
 
-                indicatorArrow.transform.localPosition = new Vector2(-515, 58);
+            // Case 45: Rotate Pulser 2 Right
 
-                unmaskHoleTransform.localPosition = new Vector2(-515, -58);
-
-                break;
             case 46: // Place Pulser 3
 
                 indicatorArrow.transform.localPosition = new Vector2(172, 58);
@@ -442,13 +471,9 @@ public class Tutorial : MonoBehaviour
                 unmaskHoleTransform.localPosition = new Vector2(-286, 58);
 
                 break;
-            case 48: // Rotate Pulser 4
 
-                indicatorArrow.transform.localPosition = new Vector2(-286, 172);
+            // Case 48: Rotate Pulser 4 Down
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, 58);
-
-                break;
             case 49: // Place Pulser 5
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, -58);
@@ -456,13 +481,9 @@ public class Tutorial : MonoBehaviour
                 unmaskHoleTransform.localPosition = new Vector2(-172, -172);
 
                 break;
-            case 50: // Rotate Pulser 5
 
-                indicatorArrow.transform.localPosition = new Vector2(-172, -58);
+            // Case 50: Rotate Pulser 4 Left
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
-
-                break;
             case 51: // Place Pulser 6
 
                 indicatorArrow.transform.localPosition = new Vector2(515, 58);
@@ -521,21 +542,700 @@ public class Tutorial : MonoBehaviour
                 break;
             case 59: // Start Play Mode for Pulser Demo
 
-                tutorialText.text = "If a Pulser detects a Cell 1 space in front of it, it moves the Cell 1 space forward. (As well as any other Fastened Cells or Cells in the way)";
+                tutorialText.text = "If a Pulser detects a Cell 1 space in front of it, it moves the Cell 1 space forward. " +
+                    "(As well as any other Fastened Cells or Cells in the way)";
                 
-                indicatorArrow.transform.localPosition = new Vector2(-116, -320);
+                indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
                 unmaskHoleTransform.localPosition = new Vector2(-115, -460);
 
                 break;
 
-            // For case 60, do nothing (player must stop play mode before progressing)
+            // Case 60: Stop Play Mode
 
-            case 61:
+            case 61: // Select Eraser
 
-                Debug.Log("Ready for magnets!");
+                tutorialText.text = "Clear the grid, then place Cells on the grid as indicated.";
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
 
                 break;
+            case 62: // Select Clear
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 63: // Select Proceed
+
+                indicatorArrow.SetActive(false);
+
+                unmaskHoleTransform.localPosition = new Vector2(300, -150);
+                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+
+                break;
+            case 64: // Select Pulser
+
+                indicatorArrow.transform.localPosition = new Vector2(165, -320);
+                indicatorArrow.SetActive(true);
+
+                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+
+                break;
+            case 65: // Place Pusler 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-172, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+
+                break;
+
+            // Case 66: Rotate Pulser 1 Up
+
+            // Case 67: Rotate Pulser 1 Right
+
+            case 68: // Select Magnet
+
+                indicatorArrow.transform.localPosition = new Vector2(295, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+
+                break;
+            case 69: // Place Magnet 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-630, -172);
+
+                unmaskHoleTransform.localPosition = new Vector2(-630, -286);
+
+                break;
+            case 70: // Place Magnet 2
+
+                indicatorArrow.transform.localPosition = new Vector2(-630, 172);
+
+                unmaskHoleTransform.localPosition = new Vector2(-630, 58);
+
+                break;
+
+            // Case 71: Rotate Magnet 2 Right
+
+            // Case 72: Rotate Magnet 2 Down
+
+            case 73: // Place Magnet 3
+
+                indicatorArrow.transform.localPosition = new Vector2(-58, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-58, -172);
+
+                break;
+
+            // Case 74: rotate Magnet 3 Left
+
+            case 75: // Select Node
+
+                indicatorArrow.transform.localPosition = new Vector2(425, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+
+                break;
+            case 76: // Place Node 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-745, -58);
+                indicatorArrow.transform.rotation = Quaternion.Euler(0, 0, 90);
+
+                unmaskHoleTransform.localPosition = new Vector2(-630, -58);
+
+                break;
+            case 77: // Place Node 2
+
+                indicatorArrow.transform.localPosition = new Vector2(-515, 58);
+                indicatorArrow.transform.rotation = Quaternion.identity;
+
+                unmaskHoleTransform.localPosition = new Vector2(-515, -58);
+
+                break;
+            case 78: // Place Node 3
+
+                indicatorArrow.transform.localPosition = new Vector2(-401, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-401, -172);
+                break;
+            case 79: // Place Node 4
+
+                indicatorArrow.transform.localPosition = new Vector2(-401, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-401, -58);
+                break;
+            case 80: // Place Node 5
+
+                indicatorArrow.transform.localPosition = new Vector2(-401, 172);
+
+                unmaskHoleTransform.localPosition = new Vector2(-401, 58);
+                break;
+            case 81: // Place Node 6
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, -286);
+                indicatorArrow.transform.rotation = Quaternion.Euler(0, 0, 90);
+
+                unmaskHoleTransform.localPosition = new Vector2(-172, -286);
+                break;
+            case 82: // Place Node 7
+
+                indicatorArrow.transform.localPosition = new Vector2(-58, 58);
+                indicatorArrow.transform.rotation = Quaternion.identity;
+
+                unmaskHoleTransform.localPosition = new Vector2(-58, -58);
+
+                break;
+            case 83: // Start Play Mode for Magnet Demo
+
+                tutorialText.text = "If a Magnet detects a Cell 2 spaces in front of it and an empty space 1 space in front of it, " +
+                    "it moves the Cell 1 space backward. (As well as any other Fastened Cells or Cells in the way)";
+
+                indicatorArrow.transform.localPosition = new Vector2(-115, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+
+                break;
+
+            // Case 84: Stop Play Mode
+
+            case 85: // Select Eraser
+
+                tutorialText.text = "Clear the grid, then place Cells on the grid as indicated.";
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 86: // Select Clear
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 87: // Select Proceed
+
+                indicatorArrow.SetActive(false);
+
+                unmaskHoleTransform.localPosition = new Vector2(300, -150);
+                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+
+                break;
+            case 88: // Select Pulser
+
+                indicatorArrow.transform.localPosition = new Vector2(165, -320);
+                indicatorArrow.SetActive(true);
+
+                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+
+                break;
+            case 89: // Place Pulser 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, 172);
+
+                unmaskHoleTransform.localPosition = new Vector2(-286, 58);
+
+                break;
+
+            // Case 90: Rotate Pulser 1 Down
+
+            case 91: // Place Pulser 2
+
+                indicatorArrow.transform.localPosition = new Vector2(-58, 172);
+
+                unmaskHoleTransform.localPosition = new Vector2(-58, 58);
+
+                break;
+
+            // Case 92: Rotate Pulser 2 Left
+
+            // Case 93: Rotate Pulser 2 Up
+
+            case 94: // Place Pulser 3
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, -172);
+
+                unmaskHoleTransform.localPosition = new Vector2(-286, -286);
+
+                break;
+            case 95: // Select Magnet
+
+                indicatorArrow.transform.localPosition = new Vector2(295, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+
+                break;
+            case 96: // Place Magnet 1
+
+                indicatorArrow.transform.localPosition = new Vector2(172, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(172, -58);
+
+                break;
+
+            // Case 97: Rotate Magnet 1 Up
+
+            case 98: // Select Node
+
+                indicatorArrow.transform.localPosition = new Vector2(425, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+
+                break;
+            case 99: // Place Node 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+
+                break;
+            case 100: // Place Node 2
+
+                indicatorArrow.transform.localPosition = new Vector2(-172, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+
+                break;
+            case 101: // Place Node 3
+
+                indicatorArrow.transform.localPosition = new Vector2(-58, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-58, -172);
+
+                break;
+            case 102: // Place Node 4
+
+                indicatorArrow.transform.localPosition = new Vector2(58, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(58, -172);
+
+                break;
+            case 103: // Start Play Mode for Node Demo
+
+                tutorialText.text = "If a Node moves onto a Space next to or behind a Pulser/Magnet, it transforms the Pulser into a Magnet or vice versa.";
+
+                indicatorArrow.transform.localPosition = new Vector2(-115, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+
+                break;
+
+            // Case 104: Stop Play Mode
+
+            case 105: // Select Eraser
+
+                tutorialText.text = "Clear the grid.";
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 106: // Select Clear
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 107: // Select Proceed
+
+                indicatorArrow.SetActive(false);
+
+                unmaskHoleTransform.localPosition = new Vector2(300, -150);
+                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+
+                break;
+            case 108: // Fail Condition Intro
+
+                tutorialText.text = "Under certain conditions, a Pulser/Magnet will fail to move any Cells. There are 3 of these fail conditions.";
+
+                nextButton.interactable = true;
+                nextArrow.SetActive(true);
+
+                indicatorArrow.SetActive(false);
+
+                unmaskHoleTransform.gameObject.SetActive(false);
+                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+
+                break;
+            case 109: // Select Pulser
+
+                tutorialText.text = "Place Cells on the grid as indicated.";
+
+                nextButton.interactable = false;
+                nextArrow.SetActive(false);
+
+                indicatorArrow.transform.localPosition = new Vector2(165, -320);
+                indicatorArrow.SetActive(true);
+
+                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+                unmaskHoleTransform.gameObject.SetActive(true);
+
+                break;
+            case 110: // Place Pulser 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+
+                break;
+            case 111: // Select Magnet
+
+                indicatorArrow.transform.localPosition = new Vector2(295, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+
+                break;
+            case 112: // Place Magnet 1
+
+                indicatorArrow.transform.localPosition = new Vector2(172, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(172, -172);
+
+                break;
+            case 113: // Select Node
+
+                indicatorArrow.transform.localPosition = new Vector2(425, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+
+                break;
+            case 114: // Place Node 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-172, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+
+                break;
+            case 115: // Place Node 2
+
+                indicatorArrow.transform.localPosition = new Vector2(-172, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-172, -58);
+
+                break;
+            case 116: // Place Node 3
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-286, -58);
+
+                break;
+            case 117: // Place Node 4
+
+                indicatorArrow.transform.localPosition = new Vector2(286, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(286, -172);
+
+                break;
+            case 118: // Place Node 5
+
+                indicatorArrow.transform.localPosition = new Vector2(286, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(286, -58);
+
+                break;
+            case 119: // Place Node 6
+
+                indicatorArrow.transform.localPosition = new Vector2(286, 172);
+
+                unmaskHoleTransform.localPosition = new Vector2(286, 58);
+
+                break;
+            case 120: // Place Node 7
+
+                indicatorArrow.transform.localPosition = new Vector2(172, 172);
+
+                unmaskHoleTransform.localPosition = new Vector2(172, 58);
+
+                break;
+            case 121: // Start Play Mode for Fail 1 Demo
+
+                tutorialText.text = "Fail Condition 1:\n" +
+                    "A Pulser/Magnet will fail if it's trying to move itself.";
+
+                indicatorArrow.transform.localPosition = new Vector2(-115, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+
+                break;
+
+            // Case 122: Stop Play Mode
+
+            case 123: // Select Eraser
+
+                tutorialText.text = "Clear the grid, then place Cells on the grid as indicated.";
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 124: // Select Clear
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 125: // Select Proceed
+
+                indicatorArrow.SetActive(false);
+
+                unmaskHoleTransform.localPosition = new Vector2(300, -150);
+                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+
+                break;
+            case 126: // Select Pulser
+
+                indicatorArrow.transform.localPosition = new Vector2(165, -320);
+                indicatorArrow.SetActive(true);
+
+                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+
+                break;
+            case 127: // Place Pulser 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-401, -172);
+
+                unmaskHoleTransform.localPosition = new Vector2(-401, -286);
+
+                break;
+            case 128: // Place Pulser 2
+
+                indicatorArrow.transform.localPosition = new Vector2(286, -172);
+
+                unmaskHoleTransform.localPosition = new Vector2(286, -286);
+
+                break;
+            case 129: // Place Pulser 3
+
+                indicatorArrow.transform.localPosition = new Vector2(-172, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-172, -58);
+
+                break;
+
+            // Case 130: Rotate Pulser 3 Right
+
+            // Case 131: Rotate Pulser 3 Down
+
+            // Case 132: Rotate Pulser 3 Left
+
+            case 133: // Select Magnet
+
+                indicatorArrow.transform.localPosition = new Vector2(295, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+
+                break;
+            case 134: // Place Magnet 1
+
+                indicatorArrow.transform.localPosition = new Vector2(401, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(401, -58);
+
+                break;
+
+            // Case 135: Rotate Magnet 1 Right
+
+            // Case 136: Rotate Magnet 1 Down
+
+            // Case 137: Rotate Magnet 1 Left
+
+            case 138: // Select Node
+
+                indicatorArrow.transform.localPosition = new Vector2(425, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+
+                break;
+            case 139: // Place Node 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-401, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-401, -172);
+
+                break;
+            case 140: // Place Node 2
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-286, -58);
+
+                break;
+            case 141: // Place Node 3
+
+                indicatorArrow.transform.localPosition = new Vector2(172, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(172, -58);
+
+                break;
+            case 142: // Place Node 4
+
+                indicatorArrow.transform.localPosition = new Vector2(286, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(286, -172);
+
+                break;
+            case 143: // Start Play Mode for Fail 2 Demo
+
+                tutorialText.text = "Fail Condition 2:\n" +
+                    "A Pulser/Magnet will fail if it's trying to move a Cell into a space that another Cell is trying to move into.";
+
+                indicatorArrow.transform.localPosition = new Vector2(-115, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+
+                break;
+
+            // Case 144: Stop Play Mode
+
+            case 145: // Select Eraser
+
+                tutorialText.text = "Clear the grid, then place Cells on the grid as indicated.";
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 146: // Select Clear
+
+                indicatorArrow.transform.localPosition = new Vector2(725, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+
+                break;
+            case 147: // Select Proceed
+
+                indicatorArrow.SetActive(false);
+
+                unmaskHoleTransform.localPosition = new Vector2(300, -150);
+                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+
+                break;
+            case 148: // Select Pulser
+
+                indicatorArrow.transform.localPosition = new Vector2(165, -320);
+                indicatorArrow.SetActive(true);
+
+                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+
+                break;
+            case 149: // Place Pulser 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-172, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+
+                break;
+            case 150: // Place Pulser 2
+
+                indicatorArrow.transform.localPosition = new Vector2(172, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(172, -172);
+
+                break;
+
+            // Case 151: Rotate Pulser 2 Up
+
+            case 152: // Place Pulser 3
+
+                indicatorArrow.transform.localPosition = new Vector2(-401, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-401, -58);
+
+                break;
+
+            // Case 153: // Rotate Pulser 3 Right
+
+            case 154: // Select Magnet
+
+                indicatorArrow.transform.localPosition = new Vector2(295, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+
+                break;
+            case 155: // Place Magnet 1
+
+                indicatorArrow.transform.localPosition = new Vector2(401, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(401, -58);
+
+                break;
+            case 156: // Select Node
+
+                indicatorArrow.transform.localPosition = new Vector2(425, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+
+                break;
+            case 157: // Place Node 1
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, -58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+
+                break;
+            case 158: // Place Node 2
+
+                indicatorArrow.transform.localPosition = new Vector2(-286, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(-286, -58);
+
+                break;
+            case 159: // Place Node 3
+
+                indicatorArrow.transform.localPosition = new Vector2(172, 58);
+
+                unmaskHoleTransform.localPosition = new Vector2(172, -58);
+
+                break;
+            case 160: // Start Play Mode for Fail 3 Demo
+
+                tutorialText.text = "Fail Condition 3:\n" +
+                    "A Pulser/Magnet will fail if it's trying to move a Cell that another Pulser/Magnet is trying to move in a <u>different</u> direction.";
+
+                indicatorArrow.transform.localPosition = new Vector2(-115, -320);
+
+                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+
+                break;
+
+            // Case 161: // Stop Play mode
+
+            case 162: // Closing Message
+
+                tutorialText.text = "You're ready to create on your own!\n\n" +
+                    "Have fun designing :)";
+
+                indicatorArrow.transform.localPosition = new Vector2(-730, 400);
+                indicatorArrow.transform.rotation = Quaternion.Euler(0, 0, 90);
+
+                unmaskHoleTransform.gameObject.SetActive(false);
+
+                break;
+
+
+                //choice:
+                //Which would you like to do?
+                //Play the tutorial(recommended for new players)
+                //View the game rules
+
+
+                //handle saving
+                //finish first method
         }
     }
 }

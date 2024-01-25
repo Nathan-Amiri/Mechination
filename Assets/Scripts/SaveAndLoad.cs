@@ -30,7 +30,7 @@ public class SaveAndLoad : MonoBehaviour
         {
             Quaternion cellRotation = Quaternion.Euler(0, 0, cellData.cellRotation);
 
-            editModeManager.SpawnCell(cellData.cellType, cellData.cellPosition, cellRotation, cellData.nodeColorNumber, false);
+            editModeManager.SpawnCell(cellData.cellType, cellData.cellPosition, cellRotation, cellData.nodeColorNumber, true);
         }
     }
 
