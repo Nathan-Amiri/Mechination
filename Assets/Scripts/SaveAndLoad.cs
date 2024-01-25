@@ -16,16 +16,22 @@ public class SaveAndLoad : MonoBehaviour
         saveFiles.Add(Application.persistentDataPath + "/Grid3.json");
         saveFiles.Add(Application.persistentDataPath + "/Grid4.json");
         saveFiles.Add(Application.persistentDataPath + "/Grid5.json");
+
+        foreach (string file in saveFiles)
+            if (!File.Exists(file))
+                File.WriteAllText(file, "");
     }
 
     public void LoadLayout(int newLayoutNumber)
     {
-        if (!File.Exists(saveFiles[newLayoutNumber])) return;
-
         editModeManager.ClearGrid();
 
         // Get layoutData from file
         string fileContents = File.ReadAllText(saveFiles[newLayoutNumber]);
+
+        if (fileContents.Length == 0)
+            return;
+
         LayoutData layoutData = JsonUtility.FromJson<LayoutData>(fileContents);
 
         foreach (CellData cellData in layoutData.cellsInLayout)
@@ -56,6 +62,7 @@ public class SaveAndLoad : MonoBehaviour
 
         // Save layoutData to file
         string jsonString = JsonUtility.ToJson(layoutData, true);
+
         File.WriteAllText(saveFiles[currentLayoutNumber], jsonString);
     }
 }
