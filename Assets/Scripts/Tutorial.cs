@@ -7,6 +7,9 @@ using UnityEngine.UI;
 
 public class Tutorial : MonoBehaviour
 {
+    [SerializeField] private GameObject tutorialMask;
+    [SerializeField] private GameObject choiceScreen;
+    [SerializeField] private GameObject rulesScreen;
     [SerializeField] private GameObject tutorialScreen;
 
     [SerializeField] private GameObject nextArrow;
@@ -22,6 +25,23 @@ public class Tutorial : MonoBehaviour
     [NonSerialized] public bool tutorialMode;
 
     private int currentTutorialPage;
+
+    public void ChoiceScreen() // Called by EditModeManager
+    {
+        tutorialMask.SetActive(true);
+        choiceScreen.SetActive(true);
+    }
+    public void SelectReadRules()
+    {
+        choiceScreen.SetActive(false);
+        rulesScreen.SetActive(true);
+    }
+
+    public void SelectExitRules()
+    {
+        rulesScreen.SetActive(false);
+        tutorialMask.SetActive(false);
+    }
 
     public void SelectEnterExitTutorial(bool enter)
     {
@@ -49,6 +69,7 @@ public class Tutorial : MonoBehaviour
             currentTutorialPage = -1;
             NextTutorialPage();
 
+            choiceScreen.SetActive(false);
             tutorialScreen.SetActive(true);
         }
         else
@@ -60,6 +81,8 @@ public class Tutorial : MonoBehaviour
             tutorialScreen.SetActive(false);
 
             tutorialMode = false;
+
+            tutorialMask.SetActive(false);
         }
     }
 
@@ -871,7 +894,7 @@ public class Tutorial : MonoBehaviour
                 break;
             case 108: // Fail Condition Intro
 
-                tutorialText.text = "Under certain conditions, a Pulser/Magnet will fail to move any Cells. There are 3 of these fail conditions.";
+                tutorialText.text = "Under certain conditions, a Pulser/Magnet will fail to move any Cells. There are 3 of these Fail Conditions.";
 
                 nextButton.interactable = true;
                 nextArrow.SetActive(true);
@@ -1242,16 +1265,6 @@ public class Tutorial : MonoBehaviour
                 unmaskHoleTransform.gameObject.SetActive(false);
 
                 break;
-
-
-                //choice:
-                //Which would you like to do?
-                //Play the tutorial(recommended for new players)
-                //View the game rules
-
-
-                //handle saving
-                //finish first method
         }
     }
 }

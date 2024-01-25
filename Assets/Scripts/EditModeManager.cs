@@ -50,12 +50,6 @@ public class EditModeManager : MonoBehaviour
     [SerializeField] private TMP_Text warningText;
 
     [SerializeField] private GameObject openTutorialMessage;
-    [SerializeField] private GameObject tutorialScreen;
-    [SerializeField] private GameObject tutorialPage1;
-    [SerializeField] private GameObject tutorialPage2;
-    [SerializeField] private Button tutorialBackButton;
-    [SerializeField] private GameObject tutorialNextButton;
-    [SerializeField] private GameObject tutorialFinishButton;
 
     [SerializeField] private Image soundToggleImage;
     [SerializeField] private AudioSource audioSource;
@@ -614,7 +608,7 @@ public class EditModeManager : MonoBehaviour
             PlayerPrefs.SetInt("TutorialOpened", 0);
         }
 
-        tutorial.SelectEnterExitTutorial(true);
+        tutorial.ChoiceScreen();
     }
 
     public void SelectSoundToggle()
