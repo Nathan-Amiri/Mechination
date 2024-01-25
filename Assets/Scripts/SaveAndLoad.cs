@@ -7,26 +7,28 @@ public class SaveAndLoad : MonoBehaviour
 {
     [SerializeField] private EditModeManager editModeManager;
 
-    private string saveFile;
-
-    private LayoutData layoutData = new();
+    private readonly List<string> saveFiles = new();
 
     void Awake()
     {
-        saveFile = Application.persistentDataPath + "/gamedata.json";
+        saveFiles.Add(Application.persistentDataPath + "/Grid1.json");
+        saveFiles.Add(Application.persistentDataPath + "/Grid2.json");
+        saveFiles.Add(Application.persistentDataPath + "/Grid3.json");
+        saveFiles.Add(Application.persistentDataPath + "/Grid4.json");
+        saveFiles.Add(Application.persistentDataPath + "/Grid5.json");
     }
 
     public void LoadLayout(int newLayoutNumber)
     {
-        if (!File.Exists(saveFile)) return;
+        if (!File.Exists(saveFiles[newLayoutNumber])) return;
 
         editModeManager.ClearGrid();
 
         // Get layoutData from file
-        string fileContents = File.ReadAllText(saveFile);
-        layoutData = JsonUtility.FromJson<LayoutData>(fileContents);
+        string fileContents = File.ReadAllText(saveFiles[newLayoutNumber]);
+        LayoutData layoutData = JsonUtility.FromJson<LayoutData>(fileContents);
 
-        foreach (CellData cellData in layoutData.layouts[newLayoutNumber].layout)
+        foreach (CellData cellData in layoutData.cellsInLayout)
         {
             Quaternion cellRotation = Quaternion.Euler(0, 0, cellData.cellRotation);
 
@@ -36,8 +38,7 @@ public class SaveAndLoad : MonoBehaviour
 
     public void SaveLayout(int currentLayoutNumber)
     {
-        // Update layoutData
-        layoutData.layouts[currentLayoutNumber].layout.Clear();
+        LayoutData layoutData = new();
 
         foreach (KeyValuePair<Vector2Int, Cell> gridIndexEntry in Cell.gridIndex)
         {
@@ -50,37 +51,23 @@ public class SaveAndLoad : MonoBehaviour
                 cellPosition = gridIndexEntry.Key
             };
 
-            layoutData.layouts[currentLayoutNumber].layout.Add(cellData);
+            layoutData.cellsInLayout.Add(cellData);
         }
 
         // Save layoutData to file
         string jsonString = JsonUtility.ToJson(layoutData, true);
-        File.WriteAllText(saveFile, jsonString);
+        File.WriteAllText(saveFiles[currentLayoutNumber], jsonString);
     }
 }
 
 [System.Serializable]
 public class LayoutData
 {
-    // JsonUtility doesn't support lists of lists, needs wrapper class to hold each list
-    public List<LayoutWrapper> layouts = new()
-    {
-        new LayoutWrapper(),
-        new LayoutWrapper(),
-        new LayoutWrapper(),
-        new LayoutWrapper(),
-        new LayoutWrapper()
-    };
+    public List<CellData> cellsInLayout = new();
 }
 
 [System.Serializable]
-public class LayoutWrapper
-{
-    public List<CellData> layout = new();
-}
-
-[System.Serializable]
-public struct CellData
+public class CellData
 {
     public int cellType; // 0 = node, 1 = pulser, 2 = magnet
     public int nodeColorNumber;

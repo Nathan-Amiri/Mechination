@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +11,7 @@ public class Tutorial : MonoBehaviour
 
     [SerializeField] private GameObject nextArrow;
     [SerializeField] private GameObject indicatorArrow;
+    [SerializeField] private GameObject ring;
 
     [SerializeField] private RectTransform unmaskHoleTransform;
 
@@ -78,8 +78,13 @@ public class Tutorial : MonoBehaviour
                 nextArrow.SetActive(true);
 
                 indicatorArrow.SetActive(false);
+                indicatorArrow.transform.localRotation = Quaternion.identity;
+
+                ring.SetActive(false);
+                ring.transform.localScale = new Vector2(1, 1);
 
                 unmaskHoleTransform.gameObject.SetActive(false);
+                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
 
                 break;
             case 1: // Cell Intro
@@ -376,22 +381,23 @@ public class Tutorial : MonoBehaviour
 
                 tutorialText.text = "When not in the Tutorial, you can quit the game with the Exit button.";
 
-                indicatorArrow.transform.localPosition = new Vector2(-865, -320);
-                indicatorArrow.SetActive(true);
+                ring.transform.localPosition = new Vector2(-865, -460);
+                ring.SetActive(true);
 
                 break;
             case 37: // Save
 
                 tutorialText.text = "When designing, be sure to save regularly using the Save button!";
 
-                indicatorArrow.transform.localPosition = new Vector2(-715, -320);
+                ring.transform.localPosition = new Vector2(-715, -460);
 
                 break;
             case 38: // Layouts
 
                 tutorialText.text = "Up to 5 grids can be saved at a time. You can switch between them using the number buttons below.";
 
-                indicatorArrow.transform.localPosition = new Vector2(-425, -320);
+                ring.transform.localPosition = new Vector2(-425, -460);
+                ring.transform.localScale = new Vector2(3.5f, 1);
 
                 break;
             case 39: // Start Play Mode
@@ -402,6 +408,10 @@ public class Tutorial : MonoBehaviour
                 nextArrow.SetActive(false);
 
                 indicatorArrow.transform.localPosition = new Vector2(-115, -320);
+                indicatorArrow.SetActive(true);
+
+                ring.SetActive(false);
+                ring.transform.localScale = new Vector2(1, 1);
 
                 unmaskHoleTransform.localPosition = new Vector2(-115, -460);
                 unmaskHoleTransform.gameObject.SetActive(true);
@@ -415,19 +425,25 @@ public class Tutorial : MonoBehaviour
                 nextButton.interactable = true;
                 nextArrow.SetActive(true);
 
-                indicatorArrow.transform.localPosition = new Vector2(15, -320);
+                indicatorArrow.SetActive(false);
+
+                ring.transform.localPosition = new Vector2(15, -460);
+                ring.SetActive(true);
 
                 unmaskHoleTransform.gameObject.SetActive(false);
 
                 break;
             case 41: // Stop Play Mode
 
-                tutorialText.text = "Press the Stop button to return to Edit Mode, then place Cells on the grid as indicated.";
+                tutorialText.text = "Press the Stop button to return to Edit Mode, then place/rotate Cells on the grid as indicated.";
 
                 nextButton.interactable = false;
                 nextArrow.SetActive(false);
 
                 indicatorArrow.transform.localPosition = new Vector2(-115, -320);
+                indicatorArrow.SetActive(true);
+
+                ring.SetActive(false);
 
                 // Unmask Hole is already in the correct position
                 unmaskHoleTransform.gameObject.SetActive(true);
@@ -555,7 +571,7 @@ public class Tutorial : MonoBehaviour
 
             case 61: // Select Eraser
 
-                tutorialText.text = "Clear the grid, then place Cells on the grid as indicated.";
+                tutorialText.text = "Clear the grid, then place/rotate Cells on the grid as indicated.";
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
@@ -705,7 +721,7 @@ public class Tutorial : MonoBehaviour
 
             case 85: // Select Eraser
 
-                tutorialText.text = "Clear the grid, then place Cells on the grid as indicated.";
+                tutorialText.text = "Clear the grid, then place/rotate Cells on the grid as indicated.";
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
@@ -868,7 +884,7 @@ public class Tutorial : MonoBehaviour
                 break;
             case 109: // Select Pulser
 
-                tutorialText.text = "Place Cells on the grid as indicated.";
+                tutorialText.text = "Place/rotate Cells on the grid as indicated.";
 
                 nextButton.interactable = false;
                 nextArrow.SetActive(false);
@@ -972,7 +988,7 @@ public class Tutorial : MonoBehaviour
 
             case 123: // Select Eraser
 
-                tutorialText.text = "Clear the grid, then place Cells on the grid as indicated.";
+                tutorialText.text = "Clear the grid, then place/rotate Cells on the grid as indicated.";
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
@@ -1102,7 +1118,7 @@ public class Tutorial : MonoBehaviour
 
             case 145: // Select Eraser
 
-                tutorialText.text = "Clear the grid, then place Cells on the grid as indicated.";
+                tutorialText.text = "Clear the grid, then place/rotate Cells on the grid as indicated.";
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
