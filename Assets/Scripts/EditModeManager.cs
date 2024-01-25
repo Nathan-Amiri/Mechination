@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -58,10 +59,13 @@ public class EditModeManager : MonoBehaviour
 
     // DYNAMIC
     public enum SpawnType { pulser, magnet, node, eraser }
-    private SpawnType currentSpawnType;
 
-    private int pulserZRotation;
-    private int magnetZRotation;
+        // Read by Tutorial
+    public SpawnType currentSpawnType { get; private set; }
+    public int pulserZRotation { get; private set; }
+    public int magnetZRotation { get; private set; }
+    public int currentNodeColorNumber { get; private set; }
+    public int currentLayoutNumber { get; private set; }
 
     private Button currentCellButton;
 
@@ -71,10 +75,6 @@ public class EditModeManager : MonoBehaviour
     private float currentTickSpeedMultiplier = 1;
 
     private bool layoutSaved = true;
-
-    private int currentLayoutNumber;
-
-    private int currentNodeColorNumber;
 
     private bool currentlyErasing;
 
@@ -96,12 +96,12 @@ public class EditModeManager : MonoBehaviour
         if (PlayerPrefs.HasKey("tickSpeedMultiplier"))
             UpdateTickMultiplier(PlayerPrefs.GetFloat("tickSpeedMultiplier"));
         else
-            playModeManager.SetTickSpeed(1);
+            UpdateTickMultiplier(1);
 
         if (PlayerPrefs.HasKey("currentLayoutNumber"))
-            SelectLoadSaveFile(PlayerPrefs.GetInt("currentLayoutNumber"));
+            LoadSaveFile(PlayerPrefs.GetInt("currentLayoutNumber"));
         else
-            SelectLoadSaveFile(0);
+            LoadSaveFile(0);
 
         if (!PlayerPrefs.HasKey("TutorialOpened"))
             openTutorialMessage.SetActive(true);
@@ -353,6 +353,7 @@ public class EditModeManager : MonoBehaviour
         Application.Quit();
     }
 
+    // Called by Tutorial
     public void SelectSave()
     {
         saveAndLoad.SaveLayout(currentLayoutNumber);
@@ -367,19 +368,27 @@ public class EditModeManager : MonoBehaviour
 
     public void SelectLoadSaveFile(int saveFile)
     {
+        // OnClicks can't call methods with multiple parameters, even if they're optional
+        LoadSaveFile(saveFile);
+    }
+    // Called by Tutorial
+    public void LoadSaveFile(int saveFile, bool saveWarningEnabled = true)
+    {
+        // Save warning is not displayed when exiting tutorial
+
         // Don't set currentLayoutNumber until confirmed
         newLayoutNumber = saveFile;
 
-        if (layoutSaved)
-            ConfirmLoadSaveFile();
-        else
+        if (!layoutSaved && saveWarningEnabled)
         {
             ToggleWarningMessage(true);
-            warningDelegate = ConfirmLoadSaveFile;
+            warningDelegate = LoadSaveFileConfirmed;
             warning.SetActive(true);
         }
+        else
+            LoadSaveFileConfirmed();
     }
-    private void ConfirmLoadSaveFile()
+    private void LoadSaveFileConfirmed()
     {
         currentLayoutNumber = newLayoutNumber;
 
@@ -454,7 +463,8 @@ public class EditModeManager : MonoBehaviour
 
         UpdateTickMultiplier(newMultiplier);
     }
-    private void UpdateTickMultiplier(float newMultiplier)
+    // Called by Tutorial
+    public void UpdateTickMultiplier(float newMultiplier)
     {
         // Set text. Remove 0 from 0.25 and 0.5
         tickSpeedMultiplierText.text = newMultiplier.ToString().TrimStart('0') + "x";
@@ -466,6 +476,7 @@ public class EditModeManager : MonoBehaviour
         playModeManager.SetTickSpeed(newMultiplier);
     }
 
+    // Called by Tutorial
     public void SelectPulser()
     {
         currentSpawnType = SpawnType.pulser;
@@ -478,6 +489,7 @@ public class EditModeManager : MonoBehaviour
             tutorial.NextTutorialPage();
     }
 
+    // Called by Tutorial
     public void SelectMagnet()
     {
         currentSpawnType = SpawnType.magnet;
@@ -502,6 +514,7 @@ public class EditModeManager : MonoBehaviour
             tutorial.NextTutorialPage();
     }
 
+    // Called by Tutorial
     public void SelectEraserClear()
     {
         currentlyErasing = !currentlyErasing;
@@ -537,7 +550,7 @@ public class EditModeManager : MonoBehaviour
         // After clearing, layout has changed
         UpdateLayoutSaved(false);
     }
-    // Called by SelectEraserClear and SaveAndLoad's LoadLayout;
+    // Called by Tutorial, SelectEraserClear, and SaveAndLoad's LoadLayout;
     public void ClearGrid()
     {
         // Must despawn outside foreach loop since despawning modifies the dict
@@ -563,6 +576,7 @@ public class EditModeManager : MonoBehaviour
             currentlyErasing = false;
     }
 
+    // Called by Tutorial
     public void SelectNodeColor(int colorNumber)
     {
         nodeImage.color = nodeColors[colorNumber];
@@ -609,6 +623,15 @@ public class EditModeManager : MonoBehaviour
         }
 
         tutorial.ChoiceScreen();
+    }
+    // Called by Tutorial
+    public void ChangeGadgetRotation(int pulserRotation, int magnetRotation)
+    {
+        pulserZRotation = pulserRotation;
+        pulserButtonTR.rotation = Quaternion.Euler(0, 0, pulserRotation);
+
+        magnetZRotation = magnetRotation;
+        magnetButtonTR.rotation = Quaternion.Euler(0, 0, magnetRotation);
     }
 
     public void SelectSoundToggle()

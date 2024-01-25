@@ -5853,6 +5853,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   editModeManager: {fileID: 545653286}
+  tutorial: {fileID: 733632266}
 --- !u!114 &545653286
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7255,6 +7256,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 00d55305d823c2743b09dc6a18bb641c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  editModeManager: {fileID: 545653286}
+  saveAndLoad: {fileID: 545653285}
+  cameraTR: {fileID: 519420032}
   tutorialMask: {fileID: 1475242101}
   choiceScreen: {fileID: 246721528}
   rulesScreen: {fileID: 125634905}
@@ -7262,7 +7266,7 @@ MonoBehaviour:
   nextArrow: {fileID: 1729372068}
   indicatorArrow: {fileID: 305825368}
   ring: {fileID: 1075453315}
-  unmaskHoleTransform: {fileID: 621624430}
+  unmaskHoleTR: {fileID: 621624430}
   tutorialText: {fileID: 1537044672}
   nextButton: {fileID: 720138357}
 --- !u!1 &749168668

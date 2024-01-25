@@ -7,6 +7,11 @@ using UnityEngine.UI;
 
 public class Tutorial : MonoBehaviour
 {
+    [SerializeField] private EditModeManager editModeManager;
+    [SerializeField] private SaveAndLoad saveAndLoad;
+
+    [SerializeField] private Transform cameraTR;
+
     [SerializeField] private GameObject tutorialMask;
     [SerializeField] private GameObject choiceScreen;
     [SerializeField] private GameObject rulesScreen;
@@ -16,7 +21,7 @@ public class Tutorial : MonoBehaviour
     [SerializeField] private GameObject indicatorArrow;
     [SerializeField] private GameObject ring;
 
-    [SerializeField] private RectTransform unmaskHoleTransform;
+    [SerializeField] private RectTransform unmaskHoleTR;
 
     [SerializeField] private TMP_Text tutorialText;
 
@@ -26,7 +31,19 @@ public class Tutorial : MonoBehaviour
 
     private int currentTutorialPage;
 
-    public void ChoiceScreen() // Called by EditModeManager
+    // TUTORIAL CACHE:
+    private int cachedNodeColor;
+
+    private EditModeManager.SpawnType cachedSpawnType;
+
+    private int cachedPulserRotation;
+    private int cachedMagnetRotation;
+
+    private Vector3 cachedCameraPosition;
+
+
+    // Called by EditModeManager
+    public void ChoiceScreen()
     {
         tutorialMask.SetActive(true);
         choiceScreen.SetActive(true);
@@ -36,7 +53,6 @@ public class Tutorial : MonoBehaviour
         choiceScreen.SetActive(false);
         rulesScreen.SetActive(true);
     }
-
     public void SelectExitRules()
     {
         rulesScreen.SetActive(false);
@@ -45,42 +61,67 @@ public class Tutorial : MonoBehaviour
 
     public void SelectEnterExitTutorial(bool enter)
     {
-
-
-
-
-        //prevent tutorial playstop from overriding save layout
-
-
-
-
-
         if (enter)
         {
+            editModeManager.SelectSave();
+            editModeManager.ClearGrid();
+
+            cachedNodeColor = editModeManager.currentNodeColorNumber;
+            editModeManager.SelectNodeColor(0);
+
+            // Set SpawnType after changing Node Color
+            cachedSpawnType = editModeManager.currentSpawnType;
+            if (editModeManager.currentSpawnType != EditModeManager.SpawnType.eraser)
+                editModeManager.SelectEraserClear();
+
+            cachedPulserRotation = editModeManager.pulserZRotation;
+            cachedMagnetRotation = editModeManager.magnetZRotation;
+            editModeManager.ChangeGadgetRotation(0, 0);
+
+            editModeManager.UpdateTickMultiplier(.5f);
+
+            cachedCameraPosition = cameraTR.position;
+            cameraTR.position = new Vector3(0, 0, -6);
+
+
+            // Enter Tutorial Mode after resetting control panel so that Tutorial Pages aren't turned early
             tutorialMode = true;
-
-            // erase mode, no rotation on gadgets, purple node color
-            // set tickSpeed to .5
-            // clear layout but don't save
-            // cache zoom and zoom in to -6
-
-            //maybe reset scene entirely?
-
-            currentTutorialPage = -1;
-            NextTutorialPage();
 
             choiceScreen.SetActive(false);
             tutorialScreen.SetActive(true);
+
+            currentTutorialPage = -1;
+            NextTutorialPage();
         }
         else
         {
-            // revert tickspeed (using playerprefs) and saved layout
-            // revert zoom
-            // clear tutorial grid somehow
-
             tutorialScreen.SetActive(false);
 
             tutorialMode = false;
+
+
+            saveAndLoad.ClearTutorialFile();
+            editModeManager.LoadSaveFile(editModeManager.currentLayoutNumber, false);
+
+            editModeManager.SelectNodeColor(cachedNodeColor);
+
+            // Set SpawnType after changing Node Color
+            if (cachedSpawnType == EditModeManager.SpawnType.pulser)
+                editModeManager.SelectPulser();
+            else if (cachedSpawnType == EditModeManager.SpawnType.magnet)
+                editModeManager.SelectMagnet();
+            else if (cachedSpawnType == EditModeManager.SpawnType.eraser)
+                editModeManager.SelectEraserClear();
+
+            editModeManager.ChangeGadgetRotation(cachedPulserRotation, cachedMagnetRotation);
+
+            if (PlayerPrefs.HasKey("tickSpeedMultiplier"))
+                editModeManager.UpdateTickMultiplier(PlayerPrefs.GetFloat("tickSpeedMultiplier"));
+            else
+                editModeManager.UpdateTickMultiplier(1);
+
+            cameraTR.position = cachedCameraPosition;
+
 
             tutorialMask.SetActive(false);
         }
@@ -106,8 +147,8 @@ public class Tutorial : MonoBehaviour
                 ring.SetActive(false);
                 ring.transform.localScale = new Vector2(1, 1);
 
-                unmaskHoleTransform.gameObject.SetActive(false);
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.gameObject.SetActive(false);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
 
                 break;
             case 1: // Cell Intro
@@ -127,15 +168,15 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
-                unmaskHoleTransform.gameObject.SetActive(true);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.gameObject.SetActive(true);
 
                 break;
             case 3: // Place Pulser
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+                unmaskHoleTR.localPosition = new Vector2(-286, -172);
 
                 break;
             case 4: // Select Magnet
@@ -144,14 +185,14 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(295, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+                unmaskHoleTR.localPosition = new Vector2(295, -460);
 
                 break;
             case 5: // Place Magnet
 
                 indicatorArrow.transform.localPosition = new Vector2(-58, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-58, -172);
+                unmaskHoleTR.localPosition = new Vector2(-58, -172);
 
                 break;
             case 6: // Select Node
@@ -160,14 +201,14 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+                unmaskHoleTR.localPosition = new Vector2(425, -460);
 
                 break;
             case 7: // Place Node
 
                 indicatorArrow.transform.localPosition = new Vector2(172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -172);
+                unmaskHoleTR.localPosition = new Vector2(172, -172);
 
                 break;
             case 8: // Select Green
@@ -178,32 +219,32 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(570, -370);
 
-                unmaskHoleTransform.sizeDelta = new Vector2(34.47f, 34.47f);
-                unmaskHoleTransform.localPosition = new Vector2(570, -435);
+                unmaskHoleTR.sizeDelta = new Vector2(34.47f, 34.47f);
+                unmaskHoleTR.localPosition = new Vector2(570, -435);
 
                 break;
             case 9: // Turn Node Green
 
                 indicatorArrow.transform.localPosition = new Vector2(172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -172);
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.localPosition = new Vector2(172, -172);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
 
                 break;
             case 10: // Select Purple
 
                 indicatorArrow.transform.localPosition = new Vector2(515, -370);
 
-                unmaskHoleTransform.sizeDelta = new Vector2(34.47f, 34.47f);
-                unmaskHoleTransform.localPosition = new Vector2(515, -435);
+                unmaskHoleTR.sizeDelta = new Vector2(34.47f, 34.47f);
+                unmaskHoleTR.localPosition = new Vector2(515, -435);
 
                 break;
             case 11: // Turn Node Purple
 
                 indicatorArrow.transform.localPosition = new Vector2(172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -172);
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.localPosition = new Vector2(172, -172);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
 
                 break;
             case 12: // Select Pulser
@@ -215,7 +256,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.gameObject.SetActive(false);
+                unmaskHoleTR.gameObject.SetActive(false);
 
                 break;
             case 13:
@@ -228,15 +269,15 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
-                unmaskHoleTransform.gameObject.SetActive(true);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.gameObject.SetActive(true);
 
                 break;
             case 14: // Rotate Pulser Right
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+                unmaskHoleTR.localPosition = new Vector2(-286, -172);
 
                 break;
 
@@ -255,7 +296,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.gameObject.SetActive(false);
+                unmaskHoleTR.gameObject.SetActive(false);
 
                 break;
             case 19: // Select Node
@@ -268,15 +309,15 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.localPosition = new Vector2(425, -460);
-                unmaskHoleTransform.gameObject.SetActive(true);
+                unmaskHoleTR.localPosition = new Vector2(425, -460);
+                unmaskHoleTR.gameObject.SetActive(true);
 
                 break;
             case 20: // Place and Fasten Node
 
                 indicatorArrow.transform.localPosition = new Vector2(286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, -172);
+                unmaskHoleTR.localPosition = new Vector2(286, -172);
 
                 break;
             case 21: // Note Fastener Icon
@@ -288,7 +329,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.gameObject.SetActive(false);
+                unmaskHoleTR.gameObject.SetActive(false);
 
                 break;
             case 22: // Place Node Above Pulser
@@ -302,15 +343,15 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(-286, 58);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -58);
-                unmaskHoleTransform.gameObject.SetActive(true);
+                unmaskHoleTR.localPosition = new Vector2(-286, -58);
+                unmaskHoleTR.gameObject.SetActive(true);
 
                 break;
             case 23: // Place Node Right of Pulser
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+                unmaskHoleTR.localPosition = new Vector2(-172, -172);
 
                 break;
             case 24: // Place Node Below Pulser
@@ -318,7 +359,7 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(-172, -286);
                 indicatorArrow.transform.rotation = Quaternion.Euler(0, 0, -90);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -286);
+                unmaskHoleTR.localPosition = new Vector2(-286, -286);
 
                 break;
             case 25: // Place Node Left of Pulser
@@ -326,7 +367,7 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(-401, -58);
                 indicatorArrow.transform.rotation = Quaternion.identity;
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, -172);
+                unmaskHoleTR.localPosition = new Vector2(-401, -172);
 
                 break;
             case 26: // Select Pulser
@@ -336,14 +377,14 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
 
                 break;
             case 27: // Rotate Pulser Right
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+                unmaskHoleTR.localPosition = new Vector2(-286, -172);
 
                 break;
 
@@ -359,14 +400,14 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 32: // Erase Cell
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+                unmaskHoleTR.localPosition = new Vector2(-172, -172);
 
                 break;
             case 33: // Select Clear
@@ -375,18 +416,18 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 34: // Select Proceed
 
                 tutorialText.text = "Be very careful when clearing the grid--you can lose a lot of work!\n\n" +
-                    "Go ahead and click Proceed. (You're only clearing this temporary Tutorial grid)";
+                    "Go ahead and click Proceed. (You're only clearing the Tutorial grid)";
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.localPosition = new Vector2(300, -150);
-                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+                unmaskHoleTR.localPosition = new Vector2(300, -150);
+                unmaskHoleTR.sizeDelta = new Vector2(200, 100);
 
                 break;
             case 35: // Pan and Zooom
@@ -396,8 +437,8 @@ public class Tutorial : MonoBehaviour
                 nextButton.interactable = true;
                 nextArrow.SetActive(true);
 
-                unmaskHoleTransform.gameObject.SetActive(false);
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.gameObject.SetActive(false);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
 
                 break;       
             case 36: // Exit
@@ -436,8 +477,8 @@ public class Tutorial : MonoBehaviour
                 ring.SetActive(false);
                 ring.transform.localScale = new Vector2(1, 1);
 
-                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
-                unmaskHoleTransform.gameObject.SetActive(true);
+                unmaskHoleTR.localPosition = new Vector2(-115, -460);
+                unmaskHoleTR.gameObject.SetActive(true);
 
                 break;
             case 40: // Tempo
@@ -453,7 +494,7 @@ public class Tutorial : MonoBehaviour
                 ring.transform.localPosition = new Vector2(15, -460);
                 ring.SetActive(true);
 
-                unmaskHoleTransform.gameObject.SetActive(false);
+                unmaskHoleTR.gameObject.SetActive(false);
 
                 break;
             case 41: // Stop Play Mode
@@ -469,28 +510,28 @@ public class Tutorial : MonoBehaviour
                 ring.SetActive(false);
 
                 // Unmask Hole is already in the correct position
-                unmaskHoleTransform.gameObject.SetActive(true);
+                unmaskHoleTR.gameObject.SetActive(true);
 
                 break;
             case 42: // Select Pulser
 
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
 
                 break;
             case 43: // Place Pulser 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-401, -172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, -286);
+                unmaskHoleTR.localPosition = new Vector2(-401, -286);
 
                 break;
             case 44: // Place Pulser 2
 
                 indicatorArrow.transform.localPosition = new Vector2(-515, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-515, -58);
+                unmaskHoleTR.localPosition = new Vector2(-515, -58);
 
                 break;
 
@@ -500,14 +541,14 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(172, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -58);
+                unmaskHoleTR.localPosition = new Vector2(172, -58);
 
                 break;
             case 47: // Place Pulser 4
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, 172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, 58);
+                unmaskHoleTR.localPosition = new Vector2(-286, 58);
 
                 break;
 
@@ -517,7 +558,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+                unmaskHoleTR.localPosition = new Vector2(-172, -172);
 
                 break;
 
@@ -527,56 +568,56 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(515, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(515, -58);
+                unmaskHoleTR.localPosition = new Vector2(515, -58);
 
                 break;
             case 52: // Select Node
 
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+                unmaskHoleTR.localPosition = new Vector2(425, -460);
 
                 break;
             case 53: // Place Node 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-401, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, -172);
+                unmaskHoleTR.localPosition = new Vector2(-401, -172);
 
                 break;
             case 54: // Place Node 2
 
                 indicatorArrow.transform.localPosition = new Vector2(172, -172);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -286);
+                unmaskHoleTR.localPosition = new Vector2(172, -286);
 
                 break;
             case 55: // Place Node 3
 
                 indicatorArrow.transform.localPosition = new Vector2(286, -172);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, -286);
+                unmaskHoleTR.localPosition = new Vector2(286, -286);
 
                 break;
             case 56: // Place Node 4
 
                 indicatorArrow.transform.localPosition = new Vector2(401, -172);
 
-                unmaskHoleTransform.localPosition = new Vector2(401, -286);
+                unmaskHoleTR.localPosition = new Vector2(401, -286);
 
                 break;
             case 57: // Place Node 5
 
                 indicatorArrow.transform.localPosition = new Vector2(286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, -172);
+                unmaskHoleTR.localPosition = new Vector2(286, -172);
 
                 break;
             case 58: // Place Node 6
 
                 indicatorArrow.transform.localPosition = new Vector2(286, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, -58);
+                unmaskHoleTR.localPosition = new Vector2(286, -58);
 
                 break;
             case 59: // Start Play Mode for Pulser Demo
@@ -586,7 +627,7 @@ public class Tutorial : MonoBehaviour
                 
                 indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+                unmaskHoleTR.localPosition = new Vector2(-115, -460);
 
                 break;
 
@@ -598,22 +639,22 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 62: // Select Clear
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 63: // Select Proceed
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.localPosition = new Vector2(300, -150);
-                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+                unmaskHoleTR.localPosition = new Vector2(300, -150);
+                unmaskHoleTR.sizeDelta = new Vector2(200, 100);
 
                 break;
             case 64: // Select Pulser
@@ -621,15 +662,15 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
 
                 break;
             case 65: // Place Pusler 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+                unmaskHoleTR.localPosition = new Vector2(-172, -172);
 
                 break;
 
@@ -641,21 +682,21 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(295, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+                unmaskHoleTR.localPosition = new Vector2(295, -460);
 
                 break;
             case 69: // Place Magnet 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-630, -172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-630, -286);
+                unmaskHoleTR.localPosition = new Vector2(-630, -286);
 
                 break;
             case 70: // Place Magnet 2
 
                 indicatorArrow.transform.localPosition = new Vector2(-630, 172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-630, 58);
+                unmaskHoleTR.localPosition = new Vector2(-630, 58);
 
                 break;
 
@@ -667,7 +708,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-58, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-58, -172);
+                unmaskHoleTR.localPosition = new Vector2(-58, -172);
 
                 break;
 
@@ -677,7 +718,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+                unmaskHoleTR.localPosition = new Vector2(425, -460);
 
                 break;
             case 76: // Place Node 1
@@ -685,7 +726,7 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(-745, -58);
                 indicatorArrow.transform.rotation = Quaternion.Euler(0, 0, 90);
 
-                unmaskHoleTransform.localPosition = new Vector2(-630, -58);
+                unmaskHoleTR.localPosition = new Vector2(-630, -58);
 
                 break;
             case 77: // Place Node 2
@@ -693,40 +734,40 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(-515, 58);
                 indicatorArrow.transform.rotation = Quaternion.identity;
 
-                unmaskHoleTransform.localPosition = new Vector2(-515, -58);
+                unmaskHoleTR.localPosition = new Vector2(-515, -58);
 
                 break;
             case 78: // Place Node 3
 
                 indicatorArrow.transform.localPosition = new Vector2(-401, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, -172);
+                unmaskHoleTR.localPosition = new Vector2(-401, -172);
                 break;
             case 79: // Place Node 4
 
                 indicatorArrow.transform.localPosition = new Vector2(-401, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, -58);
+                unmaskHoleTR.localPosition = new Vector2(-401, -58);
                 break;
             case 80: // Place Node 5
 
                 indicatorArrow.transform.localPosition = new Vector2(-401, 172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, 58);
+                unmaskHoleTR.localPosition = new Vector2(-401, 58);
                 break;
             case 81: // Place Node 6
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -286);
                 indicatorArrow.transform.rotation = Quaternion.Euler(0, 0, 90);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -286);
+                unmaskHoleTR.localPosition = new Vector2(-172, -286);
                 break;
             case 82: // Place Node 7
 
                 indicatorArrow.transform.localPosition = new Vector2(-58, 58);
                 indicatorArrow.transform.rotation = Quaternion.identity;
 
-                unmaskHoleTransform.localPosition = new Vector2(-58, -58);
+                unmaskHoleTR.localPosition = new Vector2(-58, -58);
 
                 break;
             case 83: // Start Play Mode for Magnet Demo
@@ -736,7 +777,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+                unmaskHoleTR.localPosition = new Vector2(-115, -460);
 
                 break;
 
@@ -748,22 +789,22 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 86: // Select Clear
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 87: // Select Proceed
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.localPosition = new Vector2(300, -150);
-                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+                unmaskHoleTR.localPosition = new Vector2(300, -150);
+                unmaskHoleTR.sizeDelta = new Vector2(200, 100);
 
                 break;
             case 88: // Select Pulser
@@ -771,15 +812,15 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
 
                 break;
             case 89: // Place Pulser 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, 172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, 58);
+                unmaskHoleTR.localPosition = new Vector2(-286, 58);
 
                 break;
 
@@ -789,7 +830,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-58, 172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-58, 58);
+                unmaskHoleTR.localPosition = new Vector2(-58, 58);
 
                 break;
 
@@ -801,21 +842,21 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -286);
+                unmaskHoleTR.localPosition = new Vector2(-286, -286);
 
                 break;
             case 95: // Select Magnet
 
                 indicatorArrow.transform.localPosition = new Vector2(295, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+                unmaskHoleTR.localPosition = new Vector2(295, -460);
 
                 break;
             case 96: // Place Magnet 1
 
                 indicatorArrow.transform.localPosition = new Vector2(172, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -58);
+                unmaskHoleTR.localPosition = new Vector2(172, -58);
 
                 break;
 
@@ -825,35 +866,35 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+                unmaskHoleTR.localPosition = new Vector2(425, -460);
 
                 break;
             case 99: // Place Node 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+                unmaskHoleTR.localPosition = new Vector2(-286, -172);
 
                 break;
             case 100: // Place Node 2
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+                unmaskHoleTR.localPosition = new Vector2(-172, -172);
 
                 break;
             case 101: // Place Node 3
 
                 indicatorArrow.transform.localPosition = new Vector2(-58, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-58, -172);
+                unmaskHoleTR.localPosition = new Vector2(-58, -172);
 
                 break;
             case 102: // Place Node 4
 
                 indicatorArrow.transform.localPosition = new Vector2(58, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(58, -172);
+                unmaskHoleTR.localPosition = new Vector2(58, -172);
 
                 break;
             case 103: // Start Play Mode for Node Demo
@@ -862,7 +903,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+                unmaskHoleTR.localPosition = new Vector2(-115, -460);
 
                 break;
 
@@ -874,22 +915,22 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 106: // Select Clear
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 107: // Select Proceed
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.localPosition = new Vector2(300, -150);
-                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+                unmaskHoleTR.localPosition = new Vector2(300, -150);
+                unmaskHoleTR.sizeDelta = new Vector2(200, 100);
 
                 break;
             case 108: // Fail Condition Intro
@@ -901,8 +942,8 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.gameObject.SetActive(false);
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.gameObject.SetActive(false);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
 
                 break;
             case 109: // Select Pulser
@@ -915,85 +956,85 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
-                unmaskHoleTransform.gameObject.SetActive(true);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.gameObject.SetActive(true);
 
                 break;
             case 110: // Place Pulser 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+                unmaskHoleTR.localPosition = new Vector2(-286, -172);
 
                 break;
             case 111: // Select Magnet
 
                 indicatorArrow.transform.localPosition = new Vector2(295, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+                unmaskHoleTR.localPosition = new Vector2(295, -460);
 
                 break;
             case 112: // Place Magnet 1
 
                 indicatorArrow.transform.localPosition = new Vector2(172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -172);
+                unmaskHoleTR.localPosition = new Vector2(172, -172);
 
                 break;
             case 113: // Select Node
 
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+                unmaskHoleTR.localPosition = new Vector2(425, -460);
 
                 break;
             case 114: // Place Node 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+                unmaskHoleTR.localPosition = new Vector2(-172, -172);
 
                 break;
             case 115: // Place Node 2
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -58);
+                unmaskHoleTR.localPosition = new Vector2(-172, -58);
 
                 break;
             case 116: // Place Node 3
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -58);
+                unmaskHoleTR.localPosition = new Vector2(-286, -58);
 
                 break;
             case 117: // Place Node 4
 
                 indicatorArrow.transform.localPosition = new Vector2(286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, -172);
+                unmaskHoleTR.localPosition = new Vector2(286, -172);
 
                 break;
             case 118: // Place Node 5
 
                 indicatorArrow.transform.localPosition = new Vector2(286, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, -58);
+                unmaskHoleTR.localPosition = new Vector2(286, -58);
 
                 break;
             case 119: // Place Node 6
 
                 indicatorArrow.transform.localPosition = new Vector2(286, 172);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, 58);
+                unmaskHoleTR.localPosition = new Vector2(286, 58);
 
                 break;
             case 120: // Place Node 7
 
                 indicatorArrow.transform.localPosition = new Vector2(172, 172);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, 58);
+                unmaskHoleTR.localPosition = new Vector2(172, 58);
 
                 break;
             case 121: // Start Play Mode for Fail 1 Demo
@@ -1003,7 +1044,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+                unmaskHoleTR.localPosition = new Vector2(-115, -460);
 
                 break;
 
@@ -1015,22 +1056,22 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 124: // Select Clear
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 125: // Select Proceed
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.localPosition = new Vector2(300, -150);
-                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+                unmaskHoleTR.localPosition = new Vector2(300, -150);
+                unmaskHoleTR.sizeDelta = new Vector2(200, 100);
 
                 break;
             case 126: // Select Pulser
@@ -1038,29 +1079,29 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
 
                 break;
             case 127: // Place Pulser 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-401, -172);
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, -286);
+                unmaskHoleTR.localPosition = new Vector2(-401, -286);
 
                 break;
             case 128: // Place Pulser 2
 
                 indicatorArrow.transform.localPosition = new Vector2(286, -172);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, -286);
+                unmaskHoleTR.localPosition = new Vector2(286, -286);
 
                 break;
             case 129: // Place Pulser 3
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -58);
+                unmaskHoleTR.localPosition = new Vector2(-172, -58);
 
                 break;
 
@@ -1074,14 +1115,14 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(295, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+                unmaskHoleTR.localPosition = new Vector2(295, -460);
 
                 break;
             case 134: // Place Magnet 1
 
                 indicatorArrow.transform.localPosition = new Vector2(401, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(401, -58);
+                unmaskHoleTR.localPosition = new Vector2(401, -58);
 
                 break;
 
@@ -1095,35 +1136,35 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+                unmaskHoleTR.localPosition = new Vector2(425, -460);
 
                 break;
             case 139: // Place Node 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-401, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, -172);
+                unmaskHoleTR.localPosition = new Vector2(-401, -172);
 
                 break;
             case 140: // Place Node 2
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -58);
+                unmaskHoleTR.localPosition = new Vector2(-286, -58);
 
                 break;
             case 141: // Place Node 3
 
                 indicatorArrow.transform.localPosition = new Vector2(172, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -58);
+                unmaskHoleTR.localPosition = new Vector2(172, -58);
 
                 break;
             case 142: // Place Node 4
 
                 indicatorArrow.transform.localPosition = new Vector2(286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(286, -172);
+                unmaskHoleTR.localPosition = new Vector2(286, -172);
 
                 break;
             case 143: // Start Play Mode for Fail 2 Demo
@@ -1133,7 +1174,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+                unmaskHoleTR.localPosition = new Vector2(-115, -460);
 
                 break;
 
@@ -1145,22 +1186,22 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 146: // Select Clear
 
                 indicatorArrow.transform.localPosition = new Vector2(725, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(725, -460);
+                unmaskHoleTR.localPosition = new Vector2(725, -460);
 
                 break;
             case 147: // Select Proceed
 
                 indicatorArrow.SetActive(false);
 
-                unmaskHoleTransform.localPosition = new Vector2(300, -150);
-                unmaskHoleTransform.sizeDelta = new Vector2(200, 100);
+                unmaskHoleTR.localPosition = new Vector2(300, -150);
+                unmaskHoleTR.sizeDelta = new Vector2(200, 100);
 
                 break;
             case 148: // Select Pulser
@@ -1168,22 +1209,22 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(165, -320);
                 indicatorArrow.SetActive(true);
 
-                unmaskHoleTransform.sizeDelta = new Vector2(100, 100);
-                unmaskHoleTransform.localPosition = new Vector2(165, -460);
+                unmaskHoleTR.sizeDelta = new Vector2(100, 100);
+                unmaskHoleTR.localPosition = new Vector2(165, -460);
 
                 break;
             case 149: // Place Pulser 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-172, -172);
+                unmaskHoleTR.localPosition = new Vector2(-172, -172);
 
                 break;
             case 150: // Place Pulser 2
 
                 indicatorArrow.transform.localPosition = new Vector2(172, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -172);
+                unmaskHoleTR.localPosition = new Vector2(172, -172);
 
                 break;
 
@@ -1193,7 +1234,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-401, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-401, -58);
+                unmaskHoleTR.localPosition = new Vector2(-401, -58);
 
                 break;
 
@@ -1203,42 +1244,42 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(295, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(295, -460);
+                unmaskHoleTR.localPosition = new Vector2(295, -460);
 
                 break;
             case 155: // Place Magnet 1
 
                 indicatorArrow.transform.localPosition = new Vector2(401, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(401, -58);
+                unmaskHoleTR.localPosition = new Vector2(401, -58);
 
                 break;
             case 156: // Select Node
 
                 indicatorArrow.transform.localPosition = new Vector2(425, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(425, -460);
+                unmaskHoleTR.localPosition = new Vector2(425, -460);
 
                 break;
             case 157: // Place Node 1
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, -58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -172);
+                unmaskHoleTR.localPosition = new Vector2(-286, -172);
 
                 break;
             case 158: // Place Node 2
 
                 indicatorArrow.transform.localPosition = new Vector2(-286, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(-286, -58);
+                unmaskHoleTR.localPosition = new Vector2(-286, -58);
 
                 break;
             case 159: // Place Node 3
 
                 indicatorArrow.transform.localPosition = new Vector2(172, 58);
 
-                unmaskHoleTransform.localPosition = new Vector2(172, -58);
+                unmaskHoleTR.localPosition = new Vector2(172, -58);
 
                 break;
             case 160: // Start Play Mode for Fail 3 Demo
@@ -1248,7 +1289,7 @@ public class Tutorial : MonoBehaviour
 
                 indicatorArrow.transform.localPosition = new Vector2(-115, -320);
 
-                unmaskHoleTransform.localPosition = new Vector2(-115, -460);
+                unmaskHoleTR.localPosition = new Vector2(-115, -460);
 
                 break;
 
@@ -1262,7 +1303,7 @@ public class Tutorial : MonoBehaviour
                 indicatorArrow.transform.localPosition = new Vector2(-730, 400);
                 indicatorArrow.transform.rotation = Quaternion.Euler(0, 0, 90);
 
-                unmaskHoleTransform.gameObject.SetActive(false);
+                unmaskHoleTR.gameObject.SetActive(false);
 
                 break;
         }
