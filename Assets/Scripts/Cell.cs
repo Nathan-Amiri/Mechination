@@ -35,7 +35,7 @@ public class Cell : MonoBehaviour
         // Set by HUD when Cell is spawned
     [NonSerialized] public Vector2Int currentPosition;
 
-    // Used for layout saving:
+        // Used for layout saving:
     [NonSerialized] public int cellType; // 0 = node, 1 = pulser, 2 = magnet
     [NonSerialized] public int nodeColorNumber;
 
