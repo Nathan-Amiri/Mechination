@@ -109,6 +109,8 @@ public class EditModeManager : MonoBehaviour
 
     private void Update()
     {
+        Temporary8XSpeed();
+
         // Disable shortcuts in tutorial mode
         if (!tutorial.tutorialMode)
         {
@@ -453,7 +455,7 @@ public class EditModeManager : MonoBehaviour
 
     public void SelectTickMultipler()
     {
-        // If current multiplier isn't found in the first 4 multipliers, then it's 4, so it remains at .25f
+        // If current multiplier isn't found in the first 4 multipliers, it remains at .25f
         float newMultiplier = .25f;
         for (int i = 0; i < tickSpeedMultipliers.Count - 1; i++)
             if (currentTickSpeedMultiplier == tickSpeedMultipliers[i])
@@ -649,5 +651,38 @@ public class EditModeManager : MonoBehaviour
             PlayerPrefs.SetInt("SoundOff", 0);
         else
             PlayerPrefs.DeleteKey("SoundOff");
+    }
+
+
+
+    private int eightXUnlock;
+    // Run in Update
+    private void Temporary8XSpeed()
+    {
+        if (Input.GetMouseButtonDown(0))
+            eightXUnlock = 0;
+
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            if (eightXUnlock == 6)
+            {
+                UpdateTickMultiplier(8);
+
+                eightXUnlock = 0;
+            }
+
+            eightXUnlock = 1;
+        }
+
+        if (eightXUnlock == 1 && Input.GetKeyDown(KeyCode.E))
+            eightXUnlock++;
+        if (eightXUnlock == 2 && Input.GetKeyDown(KeyCode.I))
+            eightXUnlock++;
+        if (eightXUnlock == 3 && Input.GetKeyDown(KeyCode.G))
+            eightXUnlock++;
+        if (eightXUnlock == 4 && Input.GetKeyDown(KeyCode.H))
+            eightXUnlock++;
+        if (eightXUnlock == 5 && Input.GetKeyDown(KeyCode.T))
+            eightXUnlock++;
     }
 }
