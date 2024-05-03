@@ -1,6 +1,6 @@
 Mechination is a Turing-complete cellular automata--a sandbox where you can create machines, computers, and more using only three simple blocks, called 'Cells'
 
-Created in Unity and coded in Visual Studio 2022
+Created in Unity and coded in C#
 
 Check out the game's code [here](https://github.com/Nathan-Amiri/Mechination/tree/main/Assets/Scripts)
 
