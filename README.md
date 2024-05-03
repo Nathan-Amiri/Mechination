@@ -1,6 +1,4 @@
-Mechination is a Turing-complete cellular automata
-
-A sandbox where you can create machines, computers, and more using only three simple blocks, called 'Cells'
+Mechination is a Turing-complete cellular automata--a sandbox where you can create machines, computers, and more using only three simple blocks, called 'Cells'
 
 Created in Unity and coded in Visual Studio 2022
 
