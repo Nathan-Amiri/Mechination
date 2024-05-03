@@ -15,7 +15,7 @@ All Cell behavior logic is contained within the Cell and Gadget classes.
 
 There are three types of Cells: Pulsers, Magnets, and Nodes.
 Any logic necessary for all three types of Cells is contained in the Cell class.
-Pulsers and Magnets have very similar logic, (Pulsers push and Magnets pull) so they are able to share a single class: the Gadget class, which derives from the Cell class.
-The game rules state that Nodes, upon coming into contact with a Pulser or Magnet, swap the Pulser to a Magnet or vice versa.
-In code, Gadgets actually detect when non-Gadgets come into contact, then swap themselves.
+Pulsers and Magnets have very similar logic, (Pulsers push and Magnets pull) so they have no need for separate specific Classes, and instead share the Gadget class.
+The game rules state that a Node, upon coming into contact with a Gadget, (a Pulser or Magnet) swaps the Pulser to a Magnet or vice versa.
+In code, Gadgets detect when non-Gadgets come into contact, then swap themselves.
 As a result, there is no need for a separate Node class--Nodes are simply default Cells.
