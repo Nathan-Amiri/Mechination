@@ -19,3 +19,7 @@ Pulsers and Magnets have very similar logic, (Pulsers push and Magnets pull) so 
 The game rules state that a Node, upon coming into contact with a Gadget, (a Pulser or Magnet) swaps the Pulser to a Magnet or vice versa.
 In code, Gadgets detect when non-Gadgets come into contact, then swap themselves.
 As a result, there is no need for a separate Node class--Nodes are simply default Cells.
+
+In addition to each Cell's unique behavior, Mechination has three 'fail conditions,' which can prevent Gadgets from activating in certain situations. These conditions are found in the ActivateGadget function in the Gadget class.
+
+In play mode, Gadget activation is ordered such that execution order is never a factor. The fail conditions help ensure this, as well as the Cycle logic found in the PlayModeManager's CycleTick function.
