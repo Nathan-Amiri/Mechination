@@ -81,7 +81,7 @@ public class SaveAndLoad : MonoBehaviour
         }
 
         // Save layoutData to current layout's file. If in tutorial mode, instead save to the temporary tutorial file
-        string jsonString = JsonUtility.ToJson(layoutData, true);
+        string jsonString = JsonUtility.ToJson(layoutData, false);
 
         if (tutorial.tutorialMode && !File.Exists(tutorialFile))
             Debug.LogError("tutorial file not found");
