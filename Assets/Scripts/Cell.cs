@@ -44,6 +44,12 @@ public class Cell : MonoBehaviour
         mainCamera = Camera.main;
     }
 
+    private void Update()
+    {
+        foreach (KeyValuePair<Cell, List<Cell>> pair in fastenedCells)
+            Debug.Log(pair.Key.transform.position);
+    }
+
     public void FastenCell()
     {
         List<Cell> cellsToFasten = new();
@@ -102,26 +108,11 @@ public class Cell : MonoBehaviour
     {
         // Check if this cell is fastened to any other cells
         if (!fastenedCells.ContainsKey(this)) return;
-        
+
         foreach (Cell adjacentCell in fastenedCells[this])
         {
-            // Remove this cell's fastenedCells entry
-            fastenedCells.Remove(this);
-
             // Remove this cell from adjacent cell's fastenedCells entry
-            if (!fastenedCells.TryGetValue(adjacentCell, out List<Cell> cellsFastenedToAdjacentCell))
-            {
-                Debug.LogError("Adjacent fastened cell not in this cell's FastenedCells entry");
-                return;
-            }
-
-            if (!cellsFastenedToAdjacentCell.Contains(this))
-            {
-                Debug.LogError("This cell not found in adjacent fastened cell's FastenedCells entry");
-                return;
-            }
-
-            cellsFastenedToAdjacentCell.Remove(this);
+            fastenedCells[adjacentCell].Remove(this);
 
             // Destroy fastener
             Vector2Int fastenerPosition = new((currentPosition.x + adjacentCell.currentPosition.x) / 2, (currentPosition.y + adjacentCell.currentPosition.y) / 2);
@@ -133,6 +124,9 @@ public class Cell : MonoBehaviour
             fastenerIndex.Remove(fastenerPosition);
             Destroy(fastener);
         }
+
+        // Remove this cell's fastenedCells entry
+        fastenedCells.Remove(this);
     }
 
     public void GetMovingCell(Gadget movingGadget, Vector2Int moveDirection)
