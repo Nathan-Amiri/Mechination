@@ -44,12 +44,6 @@ public class Cell : MonoBehaviour
         mainCamera = Camera.main;
     }
 
-    private void Update()
-    {
-        foreach (KeyValuePair<Cell, List<Cell>> pair in fastenedCells)
-            Debug.Log(pair.Key.transform.position);
-    }
-
     public void FastenCell()
     {
         List<Cell> cellsToFasten = new();
