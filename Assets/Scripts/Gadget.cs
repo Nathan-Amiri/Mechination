@@ -17,7 +17,7 @@ public class Gadget : Cell
     [NonSerialized] public readonly List<Cell> movingCells = new();
 
     // DYNAMIC:
-        // If false, is magnet
+    // If false, is magnet
     public bool isPulser;
 
     [NonSerialized] public Vector2Int gadgetDirection;
